@@ -75,36 +75,36 @@ export const DayColumn: React.FC<DayColumnProps> = ({
   };
 
   return (
-    <div className="flex flex-col min-w-[280px] flex-1 bg-[#171717] border border-[#45474D] rounded-xl overflow-hidden shadow-sm">
+    <div className="flex flex-col w-full min-w-0 bg-[#171717] border border-[#45474D] rounded-xl overflow-hidden shadow-sm hover:border-[#686B73] transition-colors">
       {/* COLUMN HEADER */}
       <div
-        className={`px-3 py-2.5 border-b border-[#45474D] flex items-center justify-between gap-2 select-none ${
+        className={`px-3.5 py-3 border-b border-[#45474D] flex items-center justify-between gap-2 select-none ${
           isToday ? 'bg-[#292A2E] border-b-2 border-b-sky-400' : 'bg-[#202124]'
         }`}
       >
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1.5 font-bold text-sm text-neutral-100">
-            <span>{dayLabel}</span>
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1.5 font-bold text-sm text-neutral-100 truncate">
+            <span className="truncate">{dayLabel}</span>
             {isToday && (
-              <span className="px-1.5 py-0.2 text-[9px] font-bold uppercase bg-sky-500 text-neutral-950 rounded">
+              <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase bg-sky-500 text-neutral-950 rounded shrink-0">
                 Heute
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2 text-[11px] text-neutral-400 font-medium">
-            <span className="flex items-center gap-1">
+          <div className="flex items-center gap-2 text-[11px] text-neutral-400 font-medium mt-0.5">
+            <span className="flex items-center gap-1 shrink-0">
               <Clock className="w-3 h-3 text-sky-400" />
-              {dayPersonHours} Person-Std.
+              {dayPersonHours} Std.
             </span>
             <span>·</span>
-            <span>{assignments.length} Einsätze</span>
+            <span className="truncate">{assignments.length} Einsätze</span>
           </div>
         </div>
 
         {/* Weather Badge */}
         {weather && (
           <div
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border shrink-0 ${
               weather.warningText
                 ? 'bg-amber-950 text-amber-300 border-amber-700 animate-pulse'
                 : 'bg-[#171717] text-neutral-300 border-[#32343A]'
@@ -119,7 +119,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({
       </div>
 
       {/* CARDS LIST CONTAINER */}
-      <div className="p-3 flex-1 flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] min-h-[300px]">
+      <div className="p-3.5 flex-1 flex flex-col gap-3.5 overflow-y-auto max-h-[calc(100vh-280px)] min-h-[320px]">
         {assignments.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-[#292A2E] rounded-xl text-neutral-500 text-xs gap-2">
             <span>Keine Einsätze für {dayLabel} geplant</span>

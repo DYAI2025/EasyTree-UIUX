@@ -417,11 +417,11 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
 
       {/* CALENDAR GRID MATRIX */}
       <div
-        className={`flex-1 grid gap-px p-px ${
+        className={`flex-1 grid gap-2.5 p-3.5 ${
           !calendarFilters.hideWeekendsAndBBHolidays
             ? 'grid-cols-7'
             : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
-        } ${isDarkMode ? 'bg-[#202124]' : 'bg-slate-200'}`}
+        } ${isDarkMode ? 'bg-[#0C0C0C]' : 'bg-slate-100'}`}
       >
         {filteredDays.map((day) => {
           // Check for regional holiday
@@ -447,23 +447,27 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
           return (
             <div
               key={day.dateIso}
-              className={`min-h-[140px] p-2.5 flex flex-col justify-between group relative transition-colors ${
+              className={`min-h-[150px] p-3.5 rounded-2xl border flex flex-col justify-between group relative transition-all shadow-xs ${
                 !day.isCurrentMonth
                   ? isDarkMode
-                    ? 'bg-[#0C0C0C]/40 text-neutral-600'
-                    : 'bg-slate-50 text-slate-400'
+                    ? 'bg-[#121214]/60 border-[#1A1A1E] text-neutral-600'
+                    : 'bg-slate-50/70 border-slate-200/60 text-slate-400'
+                  : isToday
+                  ? isDarkMode
+                    ? 'bg-[#181A20] border-emerald-500/50 shadow-emerald-500/5'
+                    : 'bg-emerald-50/40 border-emerald-400'
                   : isWeekend || holidayInfo
                   ? isDarkMode
-                    ? 'bg-[#121214]'
-                    : 'bg-slate-50/80'
+                    ? 'bg-[#141417] border-[#222328]'
+                    : 'bg-slate-100/70 border-slate-200'
                   : isDarkMode
-                  ? 'bg-[#171717]'
-                  : 'bg-white'
+                  ? 'bg-[#171717] border-[#25262B] hover:border-[#353740]'
+                  : 'bg-white border-slate-200 hover:border-slate-300'
               }`}
             >
               {/* Day Header */}
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-1.5">
+              <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-transparent">
+                <div className="flex items-center space-x-2">
                   <span
                     className={`font-mono text-sm font-bold ${
                       isToday
@@ -483,7 +487,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                   {/* Holiday Badge */}
                   {holidayInfo && (
                     <span
-                      className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 truncate max-w-[120px]"
+                      className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 truncate max-w-[120px]"
                       title={`Feiertag: ${holidayInfo.name} (${holidayInfo.states.join(', ')})`}
                     >
                       🎉 {holidayInfo.name}
@@ -494,7 +498,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                 {/* Quick Add Hover Button */}
                 <button
                   onClick={() => onOpenQuickAdd(day.dateIso)}
-                  className={`p-1 rounded text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-0.5 ${
+                  className={`px-1.5 py-1 rounded-md text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1 ${
                     isDarkMode
                       ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
                       : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
@@ -507,12 +511,12 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
               </div>
 
               {/* Day Assignments List */}
-              <div className="flex-1 space-y-2 overflow-y-auto max-h-[220px] pr-0.5">
+              <div className="flex-1 space-y-2.5 overflow-y-auto max-h-[240px] pr-1 py-0.5 custom-scrollbar">
                 {dayAssignments.length === 0 ? (
-                  <div className="h-full flex items-center justify-center py-4">
+                  <div className="h-full flex items-center justify-center py-5">
                     <span
                       className={`text-[11px] italic font-light ${
-                        isDarkMode ? 'text-[#858B90]/40' : 'text-slate-300'
+                        isDarkMode ? 'text-[#858B90]/40' : 'text-slate-400'
                       }`}
                     >
                       Keine Einsätze
@@ -541,11 +545,11 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                       <div
                         key={asg.id}
                         onClick={() => onSelectAssignment(asg.id)}
-                        className={`p-2.5 rounded-xl border shadow-xs cursor-pointer transition-all hover:scale-[1.02] ${
+                        className={`p-3 rounded-xl border shadow-sm cursor-pointer transition-all hover:scale-[1.015] hover:shadow-md ${
                           isDraft
                             ? 'border-dashed border-amber-400/80 bg-amber-500/10 animate-pulse'
                             : isDarkMode
-                            ? 'bg-[#202124] border-[#292A2E] hover:border-[#45474D]'
+                            ? 'bg-[#222327] border-[#303239] hover:border-[#4A4D57]'
                             : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'
                         }`}
                         style={{
@@ -554,7 +558,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                         }}
                       >
                         {/* Primary Label: Location of the Worksite */}
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center justify-between mb-1.5 gap-1">
                           <span
                             className="text-xs font-black tracking-tight uppercase truncate"
                             style={{ color: isDarkMode ? '#FFFFFF' : '#0F172A' }}
@@ -563,7 +567,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                           </span>
 
                           {isDraft && (
-                            <span className="px-1.5 py-0.2 text-[9px] font-bold rounded bg-amber-400 text-slate-950 uppercase font-mono">
+                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-400 text-slate-950 uppercase font-mono shrink-0">
                               Entwurf
                             </span>
                           )}
@@ -571,7 +575,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
 
                         {/* Activity Name & Worksite Code */}
                         <p
-                          className={`text-[11px] font-medium leading-tight truncate ${
+                          className={`text-[11px] font-medium leading-relaxed truncate ${
                             isDarkMode ? 'text-[#BBC2C7]' : 'text-slate-600'
                           }`}
                         >
@@ -579,22 +583,22 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                         </p>
 
                         {/* Time Slot */}
-                        <p className="text-[10px] font-mono text-[#858B90] mt-0.5">
+                        <p className="text-[10px] font-mono text-[#858B90] mt-1">
                           ⏰ {asg.startTime} – {asg.endTime}
                         </p>
 
                         {/* Assigned Employees (If not hidden) */}
                         {!calendarFilters.hideEmployees && assignedEmps.length > 0 && (
-                          <div className="flex flex-wrap items-center gap-1 mt-1.5 pt-1.5 border-t border-[#292A2E]/50">
+                          <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-[#292A2E]/60">
                             <Users className="w-3 h-3 text-sky-400 shrink-0" />
                             {assignedEmps.map((emp) => (
                               <span
                                 key={emp.id}
-                                className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold ${
+                                className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-semibold ${
                                   emp.isLeader
                                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                     : isDarkMode
-                                    ? 'bg-[#171717] text-[#BBC2C7]'
+                                    ? 'bg-[#171717] text-[#BBC2C7] border border-[#292A2E]'
                                     : 'bg-slate-100 text-slate-700'
                                 }`}
                                 title={`${emp.firstName} ${emp.lastName} (${emp.role})`}
@@ -608,7 +612,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                         {/* Assigned Resources (If not hidden) */}
                         {!calendarFilters.hideResources &&
                           (assignedVehs.length > 0 || assignedEqs.length > 0) && (
-                            <div className="flex flex-wrap items-center gap-1 mt-1 font-mono text-[10px] text-[#858B90]">
+                            <div className="flex flex-wrap items-center gap-1.5 mt-1.5 font-mono text-[10px] text-[#858B90]">
                               <Truck className="w-3 h-3 text-violet-400 shrink-0" />
                               {assignedVehs.map((v) => (
                                 <span key={v.id} className="truncate max-w-[80px]">

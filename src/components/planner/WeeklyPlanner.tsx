@@ -82,10 +82,10 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
   }, [currentWeek.startDate, currentWeek.weekNumber]);
 
   return (
-    <div className="max-w-[1700px] mx-auto p-4 flex flex-col lg:flex-row gap-4 items-start">
+    <div className="max-w-[1800px] mx-auto p-4 md:p-6 flex flex-col xl:flex-row gap-6 items-start">
       {/* CENTRAL WEEK BOARD GRID (MON - FRI) */}
-      <div className="flex-1 w-full overflow-x-auto pb-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 min-w-[1100px]">
+      <div className="flex-1 w-full overflow-x-auto pb-4 custom-scrollbar">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 min-w-[1420px]">
           {weekDates.map((day) => {
             const dayAssignments = assignments.filter((a) => a.date === day.date);
             const dayWeather = weatherData.find((w) => w.date === day.date);
@@ -115,7 +115,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
       </div>
 
       {/* RIGHT SIDE PANEL: UNASSIGNED / ABSENT STAFF & RESOURCES */}
-      <div className="w-full lg:w-80 shrink-0 sticky top-4">
+      <div className="w-full xl:w-80 shrink-0 xl:sticky xl:top-4">
         <UnassignedPanel
           employees={employees}
           absences={absences}
