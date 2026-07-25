@@ -53,7 +53,14 @@ export default function App() {
     return stored !== null ? stored === 'true' : true;
   });
 
-  const [activeView, setActiveView] = useState<'MONTH' | '1W' | '4W'>('MONTH'); // Month default as requested
+  const [activeView, setActiveView] = useState<'MONTH' | '1W' | '4W'>(() => {
+    const stored = localStorage.getItem('arboscus_active_view');
+    if (stored === 'MONTH' || stored === '1W' || stored === '4W') {
+      return stored;
+    }
+    return 'MONTH';
+  });
+
   const [simulatedRole, setSimulatedRole] = useState<'ADMINISTRATOR' | 'GESCHÄFTSFÜHRUNG'>('ADMINISTRATOR');
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
 
@@ -68,20 +75,58 @@ export default function App() {
   const [futureAssignments, setFutureAssignments] = useState<WorksiteAssignment[][]>([]);
 
   // CALENDAR & BOARD FILTERS
-  const [filters, setFilters] = useState<FilterOptions>({
+  const DEFAULT_FILTERS: FilterOptions = {
     searchTerm: '',
     onlyConflicts: false,
     onlyUnassigned: false,
     onlyAbsent: false,
     onlyWarnings: false,
-  });
+  };
 
-  const [calendarFilters, setCalendarFilters] = useState<CalendarFilters>({
+  const DEFAULT_CALENDAR_FILTERS: CalendarFilters = {
     disabledWorksiteIds: [],
     hideEmployees: false,
     hideResources: false,
     hideWeekendsAndBBHolidays: false,
+    selectedResourceIds: [],
+  };
+
+  const [filters, setFilters] = useState<FilterOptions>(() => {
+    const stored = localStorage.getItem('arboscus_filters');
+    if (stored) {
+      try {
+        return { ...DEFAULT_FILTERS, ...JSON.parse(stored) };
+      } catch (e) {
+        console.error('Failed to parse stored filters', e);
+      }
+    }
+    return DEFAULT_FILTERS;
   });
+
+  const [calendarFilters, setCalendarFilters] = useState<CalendarFilters>(() => {
+    const stored = localStorage.getItem('arboscus_calendar_filters');
+    if (stored) {
+      try {
+        return { ...DEFAULT_CALENDAR_FILTERS, ...JSON.parse(stored) };
+      } catch (e) {
+        console.error('Failed to parse stored calendar filters', e);
+      }
+    }
+    return DEFAULT_CALENDAR_FILTERS;
+  });
+
+  // PERSISTENCE EFFECTS
+  useEffect(() => {
+    localStorage.setItem('arboscus_active_view', activeView);
+  }, [activeView]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_filters', JSON.stringify(filters));
+  }, [filters]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_calendar_filters', JSON.stringify(calendarFilters));
+  }, [calendarFilters]);
 
   const currentWeek = weeks[currentWeekIndex] || weeks[0];
 

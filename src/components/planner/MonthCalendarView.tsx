@@ -24,6 +24,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { getHolidayInfo, isBrandenburgHolidayOrWeekend } from '../../domain/holidaysEngine';
+import { ResourceLegend } from './ResourceLegend';
 
 interface MonthCalendarViewProps {
   currentMonthDate: string; // YYYY-MM
@@ -58,6 +59,8 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
 }) => {
   const [showWorksiteFilterMenu, setShowWorksiteFilterMenu] = useState(false);
 
+  const selectedResourceIds = calendarFilters.selectedResourceIds || [];
+
   // Parse YYYY-MM
   const [yearStr, monthStr] = currentMonthDate.split('-');
   const year = parseInt(yearStr, 10) || 2026;
@@ -89,6 +92,32 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
     const y = today.getFullYear();
     const m = String(today.getMonth() + 1).padStart(2, '0');
     onMonthChange(`${y}-${m}`);
+  };
+
+  // Resource Selection Handlers
+  const handleToggleResourceId = (id: string) => {
+    const current = calendarFilters.selectedResourceIds || [];
+    const next = current.includes(id) ? current.filter((item) => item !== id) : [...current, id];
+    onUpdateCalendarFilters({ selectedResourceIds: next });
+  };
+
+  const handleClearResourceSelection = () => {
+    onUpdateCalendarFilters({ selectedResourceIds: [] });
+  };
+
+  const handleSelectAllResources = () => {
+    const allIds = [...vehicles.map((v) => v.id), ...equipment.map((e) => e.id)];
+    onUpdateCalendarFilters({ selectedResourceIds: allIds });
+  };
+
+  const handleSelectOnlyBusyResources = () => {
+    const monthAssignments = assignments.filter((a) => a.date.startsWith(currentMonthDate));
+    const busyIdsSet = new Set<string>();
+    monthAssignments.forEach((a) => {
+      a.assignedVehicleIds.forEach((id) => busyIdsSet.add(id));
+      a.assignedEquipmentIds.forEach((id) => busyIdsSet.add(id));
+    });
+    onUpdateCalendarFilters({ selectedResourceIds: Array.from(busyIdsSet) });
   };
 
   // Month name
@@ -392,6 +421,20 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
         </div>
       </div>
 
+      {/* INTERACTIVE RESOURCE LEGEND & UTILIZATION BOARD */}
+      <ResourceLegend
+        vehicles={vehicles}
+        equipment={equipment}
+        assignments={assignments}
+        currentMonthDate={currentMonthDate}
+        selectedResourceIds={selectedResourceIds}
+        onToggleResourceId={handleToggleResourceId}
+        onClearResourceSelection={handleClearResourceSelection}
+        onSelectAllResources={handleSelectAllResources}
+        onSelectOnlyBusyResources={handleSelectOnlyBusyResources}
+        isDarkMode={isDarkMode}
+      />
+
       {/* WEEKDAY HEADERS */}
       {!calendarFilters.hideWeekendsAndBBHolidays ? (
         <div
@@ -541,12 +584,24 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                       asg.assignedEquipmentIds.includes(eq.id)
                     );
 
+                    // Check resource match
+                    const hasResourceMatch =
+                      selectedResourceIds.length > 0 &&
+                      (asg.assignedVehicleIds.some((id) => selectedResourceIds.includes(id)) ||
+                        asg.assignedEquipmentIds.some((id) => selectedResourceIds.includes(id)));
+
+                    const isDimmed = selectedResourceIds.length > 0 && !hasResourceMatch;
+
                     return (
                       <div
                         key={asg.id}
                         onClick={() => onSelectAssignment(asg.id)}
-                        className={`p-3 rounded-xl border shadow-sm cursor-pointer transition-all hover:scale-[1.015] hover:shadow-md ${
-                          isDraft
+                        className={`p-3 rounded-xl border shadow-sm cursor-pointer transition-all ${
+                          hasResourceMatch
+                            ? 'ring-2 ring-violet-400 shadow-md shadow-violet-500/20 bg-violet-950/25 scale-[1.015]'
+                            : isDimmed
+                            ? 'opacity-35 grayscale-[0.25] hover:opacity-100 hover:grayscale-0'
+                            : isDraft
                             ? 'border-dashed border-amber-400/80 bg-amber-500/10 animate-pulse'
                             : isDarkMode
                             ? 'bg-[#222327] border-[#303239] hover:border-[#4A4D57]'
@@ -566,11 +621,18 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                             📍 {location}
                           </span>
 
-                          {isDraft && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-400 text-slate-950 uppercase font-mono shrink-0">
-                              Entwurf
-                            </span>
-                          )}
+                          <div className="flex items-center space-x-1 shrink-0">
+                            {hasResourceMatch && (
+                              <span className="px-1.5 py-0.5 text-[9px] font-extrabold rounded bg-violet-500 text-white uppercase font-mono shadow-xs">
+                                Match
+                              </span>
+                            )}
+                            {isDraft && (
+                              <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-400 text-slate-950 uppercase font-mono">
+                                Entwurf
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Activity Name & Worksite Code */}
@@ -614,16 +676,36 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                           (assignedVehs.length > 0 || assignedEqs.length > 0) && (
                             <div className="flex flex-wrap items-center gap-1.5 mt-1.5 font-mono text-[10px] text-[#858B90]">
                               <Truck className="w-3 h-3 text-violet-400 shrink-0" />
-                              {assignedVehs.map((v) => (
-                                <span key={v.id} className="truncate max-w-[80px]">
-                                  {v.licensePlate}
-                                </span>
-                              ))}
-                              {assignedEqs.map((eq) => (
-                                <span key={eq.id} className="truncate max-w-[80px]">
-                                  {eq.name}
-                                </span>
-                              ))}
+                              {assignedVehs.map((v) => {
+                                const isVehSelected = selectedResourceIds.includes(v.id);
+                                return (
+                                  <span
+                                    key={v.id}
+                                    className={`truncate max-w-[90px] px-1 py-0.2 rounded ${
+                                      isVehSelected
+                                        ? 'bg-sky-500/30 text-sky-200 border border-sky-400 font-bold'
+                                        : ''
+                                    }`}
+                                  >
+                                    {v.licensePlate}
+                                  </span>
+                                );
+                              })}
+                              {assignedEqs.map((eq) => {
+                                const isEqSelected = selectedResourceIds.includes(eq.id);
+                                return (
+                                  <span
+                                    key={eq.id}
+                                    className={`truncate max-w-[90px] px-1 py-0.2 rounded ${
+                                      isEqSelected
+                                        ? 'bg-purple-500/30 text-purple-200 border border-purple-400 font-bold'
+                                        : ''
+                                    }`}
+                                  >
+                                    {eq.name}
+                                  </span>
+                                );
+                              })}
                             </div>
                           )}
                       </div>

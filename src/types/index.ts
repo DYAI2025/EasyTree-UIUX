@@ -158,6 +158,7 @@ export interface CalendarFilters {
   hideEmployees: boolean;
   hideResources: boolean;
   hideWeekendsAndBBHolidays: boolean;
+  selectedResourceIds?: string[];
 }
 
 export interface FilterOptions {
