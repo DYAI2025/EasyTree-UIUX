@@ -29,6 +29,7 @@ import {
 import { Avatar } from '../common/Avatar';
 import { Badge } from '../common/Badge';
 import { calculateHours } from '../../domain/conflictEngine';
+import { SevenDayWeatherTable } from './SevenDayWeatherTable';
 
 interface WorksiteDetailDrawerProps {
   assignment: WorksiteAssignment | null;
@@ -41,6 +42,7 @@ interface WorksiteDetailDrawerProps {
   allEquipment: Equipment[];
   conflicts: PlanningConflict[];
   weather?: WeatherSummary;
+  weatherData?: WeatherSummary[];
   onClose: () => void;
   onAddEmployee: (employeeId: string) => void;
   onRemoveEmployee: (employeeId: string) => void;
@@ -63,6 +65,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
   allEquipment,
   conflicts,
   weather,
+  weatherData,
   onClose,
   onAddEmployee,
   onRemoveEmployee,
@@ -254,6 +257,15 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                 </div>
               )}
             </div>
+          )}
+
+          {/* EXTENDED 7-DAY WEATHER FORECAST TABLE */}
+          {assignment && (worksite || weather) && (
+            <SevenDayWeatherTable
+              location={weather?.location || worksite?.location || 'Potsdam'}
+              selectedDate={assignment.date}
+              weatherData={weatherData}
+            />
           )}
 
           {/* ASSIGNED TEAM MEMBERS SECTION */}

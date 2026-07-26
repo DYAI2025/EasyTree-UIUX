@@ -727,6 +727,7 @@ export default function App() {
         allEquipment={equipment}
         conflicts={weeklyConflicts}
         weather={selectedWeather}
+        weatherData={weatherData}
         onClose={() => setSelectedAssignmentId(null)}
         onAddEmployee={handleAddEmployeeToAssignment}
         onRemoveEmployee={handleRemoveEmployeeFromAssignment}
