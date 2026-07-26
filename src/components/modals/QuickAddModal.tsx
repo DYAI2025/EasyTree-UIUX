@@ -103,22 +103,22 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
         className={`w-full max-w-xl rounded-2xl shadow-2xl border overflow-hidden transition-colors ${
           isDarkMode
             ? 'bg-[#171717] border-[#292A2E] text-[#F2F4F5]'
-            : 'bg-white border-slate-200 text-slate-900'
+            : 'bg-white border-[#97B89A] text-[#3B4A3B]'
         }`}
       >
         {/* Header */}
         <div
           className={`flex items-center justify-between px-6 py-4 border-b ${
-            isDarkMode ? 'border-[#292A2E] bg-[#0C0C0C]' : 'border-slate-100 bg-slate-50'
+            isDarkMode ? 'border-[#292A2E] bg-[#0C0C0C]' : 'border-[#97B89A] bg-[#CDE7CC]'
           }`}
         >
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+            <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-emerald-500/10 text-emerald-500' : 'bg-[#3B4A3B]/10 text-[#3B4A3B]'}`}>
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-base font-bold tracking-tight">Einsatz Schnell-Erfassen</h2>
-              <p className={`text-xs ${isDarkMode ? 'text-[#858B90]' : 'text-slate-500'}`}>
+              <p className={`text-xs ${isDarkMode ? 'text-[#858B90]' : 'text-[#6E8B6E]'}`}>
                 Wird direkt als unbestätigter Entwurf angelegt
               </p>
             </div>
@@ -128,7 +128,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
             className={`p-1.5 rounded-lg transition-colors ${
               isDarkMode
                 ? 'hover:bg-[#202124] text-[#858B90] hover:text-white'
-                : 'hover:bg-slate-100 text-slate-400 hover:text-slate-700'
+                : 'hover:bg-[#E9F4EA] text-[#6E8B6E] hover:text-[#3B4A3B]'
             }`}
           >
             <X className="w-5 h-5" />

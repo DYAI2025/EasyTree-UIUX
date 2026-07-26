@@ -23,26 +23,26 @@ export const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fade-in">
-      <div className="w-full max-w-md bg-[#171717] border border-[#45474D] rounded-2xl shadow-2xl overflow-hidden select-none">
+      <div className="w-full max-w-md bg-[var(--wood-panel)] border border-[var(--wood-border)] rounded-2xl shadow-2xl overflow-hidden select-none">
         {/* HEADER */}
-        <div className="px-5 py-4 bg-[#202124] border-b border-[#45474D] flex items-center justify-between">
+        <div className="px-5 py-4 bg-[var(--wood-base)] border-b border-[var(--wood-border)] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-sky-400" />
-            <h3 className="text-base font-bold text-neutral-100">Planungsfilter anpassen</h3>
+            <Filter className="w-5 h-5 text-[var(--wood-ash)]" />
+            <h3 className="text-base font-bold text-[var(--wood-text-primary)]">Planungsfilter anpassen</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-[#32343A]"
+            className="p-1.5 text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)] rounded-lg hover:bg-[var(--wood-raised)]"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* BODY */}
-        <div className="p-5 space-y-4 text-xs text-neutral-200 max-h-[70vh] overflow-y-auto">
+        <div className="p-5 space-y-4 text-xs text-[var(--wood-text-secondary)] max-h-[70vh] overflow-y-auto">
           {/* SEARCH TERM */}
           <div>
-            <label className="text-[11px] font-bold text-neutral-400 uppercase mb-1 block">
+            <label className="text-[11px] font-bold text-[var(--wood-text-muted)] uppercase mb-1 block">
               Freitextsuche (Name, Baustelle, Ort)
             </label>
             <input
@@ -50,7 +50,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
               value={filters.searchTerm}
               onChange={(e) => onUpdateFilters({ ...filters, searchTerm: e.target.value })}
               placeholder="z.B. Martin, Sanssouci, Potsdam..."
-              className="w-full bg-[#202124] text-neutral-100 border border-[#45474D] rounded-lg px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
+              className="w-full bg-[var(--wood-base)] text-[var(--wood-text-primary)] border border-[var(--wood-border)] rounded-lg px-3 py-2 text-xs focus:border-[var(--wood-edge)] focus:outline-none"
             />
           </div>
 

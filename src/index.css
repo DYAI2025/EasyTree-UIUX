@@ -54,6 +54,50 @@
     --site-slate: #778899;
   }
 
+  /* FAIRY GLADE PALETTE LIGHT MODE */
+  .light, html.light, body.light, [data-theme='light'] {
+    /* FAIRY GLADE PALETTE EXACT HEX CODES */
+    --fairy-dark: #3B4A3B;       /* Dark forest green - Primary text & high-contrast elements */
+    --fairy-sage-dark: #6E8B6E;  /* Mid sage green - Secondary text & strong borders */
+    --fairy-sage-soft: #97B89A;  /* Soft sage green - Cards & active borders */
+    --fairy-mint-pale: #CDE7CC;  /* Light pale mint - Panel containers & backdrops */
+    --fairy-bg-light: #E9F4EA;   /* Lightest soft green - Page canvas background */
+
+    --wood-page: #E9F4EA;
+    --wood-base: #FFFFFF;
+    --wood-panel: #CDE7CC;
+    --wood-raised: #FFFFFF;
+    --wood-selected: #CDE7CC;
+    --wood-seam: #DCEFDD;
+    --wood-border: #97B89A;
+    --wood-edge: #6E8B6E;
+    --wood-text-primary: #3B4A3B;
+    --wood-text-secondary: #4A5E4A;
+    --wood-text-muted: #6E8B6E;
+    --wood-ash: #3B4A3B;
+    --wood-moss: #3B4A3B;
+    --wood-resin: #6E8B6E;
+    --wood-burnt-red: #B93829;
+    --wood-info: #235F53;
+
+    --surface-page: #E9F4EA;
+    --surface-base: #FFFFFF;
+    --surface-panel: #CDE7CC;
+    --surface-raised: #FFFFFF;
+    --surface-hover: #D7ECD8;
+    --surface-selected: #CDE7CC;
+
+    --border-dark: #97B89A;
+    --border-default: #97B89A;
+    --border-strong: #6E8B6E;
+    --edge-light: #97B89A;
+
+    --text-primary: #3B4A3B;
+    --text-secondary: #4A5E4A;
+    --text-muted: #6E8B6E;
+    --focus: #3B4A3B;
+  }
+
   body {
     background-color: var(--wood-page);
     color: var(--wood-text-primary);

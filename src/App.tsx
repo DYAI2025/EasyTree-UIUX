@@ -25,6 +25,7 @@ import {
 } from './data/mockData';
 import { detectConflicts } from './domain/conflictEngine';
 import { computeBentoMetrics } from './domain/capacityEngine';
+import { exportWeekAssignmentsToCSV } from './utils/csvExport';
 import { TopCommandBar } from './components/layout/TopCommandBar';
 import { SummaryTiles } from './components/layout/SummaryTiles';
 import { MonthCalendarView } from './components/planner/MonthCalendarView';
@@ -133,6 +134,16 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('arboscus_calendar_filters', JSON.stringify(calendarFilters));
   }, [calendarFilters]);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   const currentWeek = weeks[currentWeekIndex] || weeks[0];
 
@@ -621,6 +632,17 @@ export default function App() {
     return count;
   }, [filters]);
 
+  const handleExportCSV = useCallback(() => {
+    exportWeekAssignmentsToCSV({
+      currentWeek,
+      assignments,
+      worksites,
+      employees,
+      vehicles,
+      equipment,
+    });
+  }, [currentWeek, assignments, worksites, employees, vehicles, equipment]);
+
   return (
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors ${
@@ -651,6 +673,7 @@ export default function App() {
         isDarkMode={isDarkMode}
         onToggleDarkMode={handleToggleDarkMode}
         onOpenQuickAdd={() => handleOpenQuickAdd()}
+        onExportCSV={handleExportCSV}
       />
 
       {/* 2. SUMMARY TILES (BENTO GRID) */}

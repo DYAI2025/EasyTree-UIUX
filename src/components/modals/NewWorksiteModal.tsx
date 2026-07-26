@@ -112,7 +112,7 @@ export const NewWorksiteModal: React.FC<NewWorksiteModalProps> = ({
         className={`w-full max-w-2xl rounded-2xl shadow-2xl border overflow-hidden transition-colors ${
           isDarkMode
             ? 'bg-[var(--wood-panel)] border-[var(--wood-border)] text-[var(--wood-text-primary)] wood-grain-v'
-            : 'bg-white border-slate-200 text-slate-900'
+            : 'bg-white border-[#97B89A] text-[#3B4A3B]'
         }`}
       >
         {/* Header */}
@@ -120,20 +120,20 @@ export const NewWorksiteModal: React.FC<NewWorksiteModalProps> = ({
           className={`flex items-center justify-between px-6 py-4 border-b ${
             isDarkMode
               ? 'border-[var(--wood-border)] bg-[var(--wood-base)] wood-burnt-edge'
-              : 'border-slate-100 bg-slate-50'
+              : 'border-[#97B89A] bg-[#CDE7CC]'
           }`}
           style={{ borderTop: `4px solid ${selectedHex}` }}
         >
           <div className="flex items-center space-x-3">
             <div
-              className="p-2 rounded-lg text-white font-bold flex items-center justify-center"
+              className="p-2 rounded-lg text-white font-bold flex items-center justify-center shadow-xs"
               style={{ backgroundColor: selectedHex }}
             >
               <Building className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-base font-bold tracking-tight">Neue Baustelle anlegen</h2>
-              <p className={`text-xs ${isDarkMode ? 'text-[var(--wood-text-muted)]' : 'text-slate-500'}`}>
+              <p className={`text-xs ${isDarkMode ? 'text-[var(--wood-text-muted)]' : 'text-[#6E8B6E]'}`}>
                 Ort per Adresse oder Karte festlegen und Stammdaten erfassen
               </p>
             </div>
@@ -143,7 +143,7 @@ export const NewWorksiteModal: React.FC<NewWorksiteModalProps> = ({
             className={`p-1.5 rounded-lg transition-colors ${
               isDarkMode
                 ? 'hover:bg-[var(--wood-raised)] text-[var(--wood-text-muted)] hover:text-white'
-                : 'hover:bg-slate-100 text-slate-400 hover:text-slate-700'
+                : 'hover:bg-[#E9F4EA] text-[#6E8B6E] hover:text-[#3B4A3B]'
             }`}
           >
             <X className="w-5 h-5" />
