@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Worksite, Employee, Vehicle, Equipment, WorksiteAssignment } from '../../types';
-import { X, Plus, Calendar, Clock, MapPin, User, Truck, Wrench, Sparkles } from 'lucide-react';
+import { X, Plus, Calendar, Clock, MapPin, User, Truck, Wrench, Sparkles, Building } from 'lucide-react';
+import { NewWorksiteModal } from './NewWorksiteModal';
 
 interface QuickAddModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface QuickAddModalProps {
   vehicles: Vehicle[];
   equipment: Equipment[];
   onAddAssignment: (assignment: Omit<WorksiteAssignment, 'id'>) => void;
+  onAddWorksite?: (worksite: Worksite) => void;
   isDarkMode?: boolean;
 }
 
@@ -23,6 +25,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
   vehicles,
   equipment,
   onAddAssignment,
+  onAddWorksite,
   isDarkMode = true,
 }) => {
   const [date, setDate] = useState(defaultDate || new Date().toISOString().split('T')[0]);
@@ -35,8 +38,16 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
   );
   const [selectedVehicleIds, setSelectedVehicleIds] = useState<string[]>([]);
   const [selectedEquipmentIds, setSelectedEquipmentIds] = useState<string[]>([]);
+  const [isNewWorksiteModalOpen, setIsNewWorksiteModalOpen] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleAddNewWorksite = (newWs: Worksite) => {
+    if (onAddWorksite) {
+      onAddWorksite(newWs);
+    }
+    setWorksiteId(newWs.id);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,14 +198,31 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
 
           {/* Worksite Selection */}
           <div>
-            <label
-              className={`block text-xs font-semibold mb-1.5 flex items-center space-x-1.5 ${
-                isDarkMode ? 'text-[#BBC2C7]' : 'text-slate-700'
-              }`}
-            >
-              <MapPin className="w-3.5 h-3.5 text-amber-400" />
-              <span>Baustelle / Ort</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label
+                className={`text-xs font-semibold flex items-center space-x-1.5 ${
+                  isDarkMode ? 'text-[#BBC2C7]' : 'text-slate-700'
+                }`}
+              >
+                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                <span>Baustelle / Ort</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setIsNewWorksiteModalOpen(true)}
+                className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border transition-all flex items-center space-x-1 ${
+                  isDarkMode
+                    ? 'bg-[var(--wood-moss)]/20 border-[var(--wood-moss)]/40 text-[var(--wood-moss)] hover:bg-[var(--wood-moss)]/30'
+                    : 'bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100'
+                }`}
+                title="Eine völlig neue Baustelle mit Adresse und Karten-Pinpoint anlegen"
+              >
+                <Building className="w-3.5 h-3.5" />
+                <span>+ Neue Baustelle anlegen</span>
+              </button>
+            </div>
+
             <select
               value={worksiteId}
               onChange={(e) => setWorksiteId(e.target.value)}
@@ -401,6 +429,16 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Render New Worksite Modal if triggered */}
+      {isNewWorksiteModalOpen && (
+        <NewWorksiteModal
+          isOpen={isNewWorksiteModalOpen}
+          onClose={() => setIsNewWorksiteModalOpen(false)}
+          onAddWorksite={handleAddNewWorksite}
+          isDarkMode={isDarkMode}
+        />
+      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   PlanningState,
   WorksiteAssignment,
+  Worksite,
   Employee,
   Vehicle,
   Equipment,
@@ -41,11 +42,16 @@ export default function App() {
   const [weeks, setWeeks] = useState(INITIAL_WEEKS);
   const [employees] = useState<Employee[]>(INITIAL_EMPLOYEES);
   const [absences] = useState(INITIAL_ABSENCES);
-  const [worksites] = useState(INITIAL_WORKSITES);
+  const [worksites, setWorksites] = useState<Worksite[]>(INITIAL_WORKSITES);
   const [vehicles] = useState<Vehicle[]>(INITIAL_VEHICLES);
   const [equipment] = useState<Equipment[]>(INITIAL_EQUIPMENT);
   const [assignments, setAssignments] = useState<WorksiteAssignment[]>(INITIAL_ASSIGNMENTS);
   const [weatherData] = useState(INITIAL_WEATHER);
+
+  // ADD NEW WORKSITE HANDLER
+  const handleAddWorksite = useCallback((newWs: Worksite) => {
+    setWorksites((prev) => [newWs, ...prev]);
+  }, []);
 
   // THEME & VIEW STATES
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -783,6 +789,7 @@ export default function App() {
           vehicles={vehicles}
           equipment={equipment}
           onAddAssignment={handleQuickAddSubmit}
+          onAddWorksite={handleAddWorksite}
           isDarkMode={isDarkMode}
         />
       )}

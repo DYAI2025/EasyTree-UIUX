@@ -13,6 +13,7 @@ import {
   Sun,
   Moon,
   Plus,
+  Printer,
 } from 'lucide-react';
 import { PlanningWeek } from '../../types';
 
@@ -37,6 +38,7 @@ interface TopCommandBarProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   onOpenQuickAdd: () => void;
+  onPrint?: () => void;
 }
 
 export const TopCommandBar: React.FC<TopCommandBarProps> = ({
@@ -60,11 +62,21 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
   isDarkMode,
   onToggleDarkMode,
   onOpenQuickAdd,
+  onPrint,
 }) => {
+  const handlePrint = () => {
+    if (onPrint) {
+      onPrint();
+    } else {
+      window.print();
+    }
+  };
   return (
     <header
       className={`flex flex-wrap items-center justify-between px-6 py-3 border-b select-none gap-3 transition-colors ${
-        isDarkMode ? 'bg-[#0C0C0C] border-[#171717] text-[#F2F4F5]' : 'bg-slate-50 border-slate-200 text-slate-900'
+        isDarkMode
+          ? 'bg-[var(--wood-panel)] border-[var(--wood-border)] wood-grain-h wood-burnt-edge text-[var(--wood-text-primary)]'
+          : 'bg-slate-50 border-slate-200 text-slate-900'
       }`}
     >
       {/* LEFT: KW & Date Range & View Switcher */}
@@ -72,8 +84,10 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         <div className="flex items-center space-x-3">
           <button
             onClick={onPrevWeek}
-            className={`p-1 rounded transition-colors ${
-              isDarkMode ? 'hover:bg-[#171717] text-[#858B90] hover:text-white' : 'hover:bg-slate-200 text-slate-500'
+            className={`p-1.5 rounded-lg transition-colors ${
+              isDarkMode
+                ? 'hover:bg-[var(--wood-raised)] text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)] border border-transparent hover:border-[var(--wood-border)]'
+                : 'hover:bg-slate-200 text-slate-500'
             }`}
             title="Vorherige Periode"
             aria-label="Vorherige Periode"
@@ -84,14 +98,14 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
           <div className="flex items-center space-x-2">
             <span
               className={`font-mono text-sm font-semibold ${
-                isDarkMode ? 'text-[#858B90]' : 'text-slate-500'
+                isDarkMode ? 'text-[var(--wood-ash)]' : 'text-slate-500'
               }`}
             >
               KW {currentWeek.weekNumber}
             </span>
             <h1
               className={`text-lg font-semibold tracking-tight ${
-                isDarkMode ? 'text-[#F2F4F5]' : 'text-slate-900'
+                isDarkMode ? 'text-[var(--wood-text-primary)]' : 'text-slate-900'
               }`}
             >
               {currentWeek.startDate} – {currentWeek.endDate}
@@ -100,8 +114,10 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
 
           <button
             onClick={onNextWeek}
-            className={`p-1 rounded transition-colors ${
-              isDarkMode ? 'hover:bg-[#171717] text-[#858B90] hover:text-white' : 'hover:bg-slate-200 text-slate-500'
+            className={`p-1.5 rounded-lg transition-colors ${
+              isDarkMode
+                ? 'hover:bg-[var(--wood-raised)] text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)] border border-transparent hover:border-[var(--wood-border)]'
+                : 'hover:bg-slate-200 text-slate-500'
             }`}
             title="Nächste Periode"
             aria-label="Nächste Periode"
@@ -111,9 +127,9 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
 
           <button
             onClick={onToday}
-            className={`px-2.5 py-1 text-xs font-medium rounded border transition-colors ${
+            className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-colors ${
               isDarkMode
-                ? 'bg-[#171717] hover:bg-[#202124] text-[#BBC2C7] border-[#292A2E]'
+                ? 'bg-[var(--wood-base)] hover:bg-[var(--wood-raised)] text-[var(--wood-text-secondary)] border-[var(--wood-border)] hover:text-[var(--wood-text-primary)]'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
             }`}
           >
@@ -123,35 +139,35 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
 
         {/* View Switcher: Monat / 1W / 4W */}
         <nav
-          className={`flex rounded-md p-0.5 border ${
-            isDarkMode ? 'bg-[#171717] border-[#292A2E]' : 'bg-slate-200 border-slate-300'
+          className={`flex rounded-lg p-0.5 border ${
+            isDarkMode ? 'bg-[var(--wood-seam)] border-[var(--wood-border)]' : 'bg-slate-200 border-slate-300'
           }`}
         >
           <button
             onClick={() => onViewChange('MONTH')}
-            className={`px-3 py-1 text-xs font-semibold rounded transition-colors flex items-center space-x-1 ${
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all flex items-center space-x-1.5 ${
               activeView === 'MONTH'
                 ? isDarkMode
-                  ? 'bg-[#383B42] text-white shadow-xs font-bold'
+                  ? 'bg-[var(--wood-raised)] text-[var(--wood-ash)] border border-[var(--wood-edge)] shadow-xs font-bold'
                   : 'bg-white text-slate-900 shadow-xs font-bold'
                 : isDarkMode
-                ? 'text-[#858B90] hover:text-white'
+                ? 'text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <CalendarIcon className="w-3.5 h-3.5" />
+            <CalendarIcon className="w-3.5 h-3.5 text-[var(--wood-ash)]" />
             <span>Monat (Kalender)</span>
           </button>
 
           <button
             onClick={() => onViewChange('1W')}
-            className={`px-3 py-1 text-xs font-semibold rounded transition-colors ${
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
               activeView === '1W'
                 ? isDarkMode
-                  ? 'bg-[#383B42] text-white shadow-xs font-bold'
+                  ? 'bg-[var(--wood-raised)] text-[var(--wood-ash)] border border-[var(--wood-edge)] shadow-xs font-bold'
                   : 'bg-white text-slate-900 shadow-xs font-bold'
                 : isDarkMode
-                ? 'text-[#858B90] hover:text-white'
+                ? 'text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -160,13 +176,13 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
 
           <button
             onClick={() => onViewChange('4W')}
-            className={`px-3 py-1 text-xs font-semibold rounded transition-colors ${
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
               activeView === '4W'
                 ? isDarkMode
-                  ? 'bg-[#383B42] text-white shadow-xs font-bold'
+                  ? 'bg-[var(--wood-raised)] text-[var(--wood-ash)] border border-[var(--wood-edge)] shadow-xs font-bold'
                   : 'bg-white text-slate-900 shadow-xs font-bold'
                 : isDarkMode
-                ? 'text-[#858B90] hover:text-white'
+                ? 'text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -180,7 +196,11 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         {/* Quick Add Button */}
         <button
           onClick={onOpenQuickAdd}
-          className="px-3 py-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-md transition-all shadow-sm flex items-center space-x-1"
+          className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shadow-sm flex items-center space-x-1.5 cursor-pointer ${
+            isDarkMode
+              ? 'bg-[var(--wood-moss)] hover:brightness-110 text-[var(--wood-seam)] font-extrabold'
+              : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950'
+          }`}
           title="Neuen Einsatz schnell auf das Board setzen"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
@@ -189,19 +209,19 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
 
         {/* Undo / Redo Buttons */}
         <div
-          className={`flex items-center space-x-1 p-0.5 rounded-md border ${
-            isDarkMode ? 'bg-[#171717] border-[#292A2E]' : 'bg-slate-200 border-slate-300'
+          className={`flex items-center space-x-1 p-0.5 rounded-lg border ${
+            isDarkMode ? 'bg-[var(--wood-seam)] border-[var(--wood-border)]' : 'bg-slate-200 border-slate-300'
           }`}
         >
           <button
             onClick={onUndo}
             disabled={!canUndo}
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1.5 rounded-md transition-colors ${
               canUndo
                 ? isDarkMode
-                  ? 'text-[#BBC2C7] hover:text-white cursor-pointer hover:bg-[#202124]'
+                  ? 'text-[var(--wood-text-secondary)] hover:text-[var(--wood-text-primary)] cursor-pointer hover:bg-[var(--wood-raised)]'
                   : 'text-slate-700 hover:text-slate-900 cursor-pointer hover:bg-white'
-                : 'text-slate-500/40 cursor-not-allowed'
+                : 'text-[var(--wood-text-muted)]/30 cursor-not-allowed'
             }`}
             title="Rückgängig (Ctrl+Z / Cmd+Z)"
           >
@@ -211,12 +231,12 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
           <button
             onClick={onRedo}
             disabled={!canRedo}
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1.5 rounded-md transition-colors ${
               canRedo
                 ? isDarkMode
-                  ? 'text-[#BBC2C7] hover:text-white cursor-pointer hover:bg-[#202124]'
+                  ? 'text-[var(--wood-text-secondary)] hover:text-[var(--wood-text-primary)] cursor-pointer hover:bg-[var(--wood-raised)]'
                   : 'text-slate-700 hover:text-slate-900 cursor-pointer hover:bg-white'
-                : 'text-slate-500/40 cursor-not-allowed'
+                : 'text-[var(--wood-text-muted)]/30 cursor-not-allowed'
             }`}
             title="Wiederholen (Ctrl+Y / Cmd+Shift+Z)"
           >
@@ -227,9 +247,9 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         {/* Dark / Light Theme Toggle */}
         <button
           onClick={onToggleDarkMode}
-          className={`p-1.5 rounded-md border transition-colors ${
+          className={`p-1.5 rounded-lg border transition-colors ${
             isDarkMode
-              ? 'bg-[#171717] border-[#292A2E] text-amber-400 hover:bg-[#202124]'
+              ? 'bg-[var(--wood-base)] border-[var(--wood-border)] text-[var(--wood-resin)] hover:bg-[var(--wood-raised)]'
               : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
           }`}
           title={isDarkMode ? 'Auf helles Design wechseln' : 'Auf dunkles Design wechseln'}
@@ -244,21 +264,21 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
               simulatedRole === 'ADMINISTRATOR' ? 'GESCHÄFTSFÜHRUNG' : 'ADMINISTRATOR'
             )
           }
-          className={`flex items-center space-x-1 px-2.5 py-1 rounded-md border text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border text-xs font-medium transition-colors ${
             isDarkMode
-              ? 'bg-[#171717] hover:bg-[#202124] border-[#292A2E] text-[#BBC2C7]'
+              ? 'bg-[var(--wood-base)] hover:bg-[var(--wood-raised)] border-[var(--wood-border)] text-[var(--wood-text-secondary)]'
               : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700'
           }`}
           title="Klick zum Wechseln der simulierten Berechtigung"
         >
           {simulatedRole === 'ADMINISTRATOR' ? (
             <>
-              <ShieldCheck className="w-3.5 h-3.5 text-[#4FD18B]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--wood-moss)]" />
               <span>Admin</span>
             </>
           ) : (
             <>
-              <Eye className="w-3.5 h-3.5 text-[#F4B942]" />
+              <Eye className="w-3.5 h-3.5 text-[var(--wood-resin)]" />
               <span>Geschäftsführung</span>
             </>
           )}
@@ -267,35 +287,50 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         {/* Filter Toggle */}
         <button
           onClick={onOpenFilters}
-          className={`flex items-center space-x-1.5 px-3 py-1 rounded-md border text-xs font-medium transition-colors ${
+          className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg border text-xs font-medium transition-colors ${
             activeFilterCount > 0
-              ? 'border-[#66C7F5] text-[#66C7F5] bg-sky-500/10'
+              ? 'border-[var(--wood-info)] text-[var(--wood-info)] bg-[var(--wood-info)]/10'
               : isDarkMode
-              ? 'bg-[#171717] border-[#292A2E] text-[#BBC2C7]'
+              ? 'bg-[var(--wood-base)] border-[var(--wood-border)] text-[var(--wood-text-secondary)] hover:bg-[var(--wood-raised)]'
               : 'bg-white border-slate-300 text-slate-700'
           }`}
         >
           <Filter className="w-3.5 h-3.5" />
           <span>Filter</span>
           {activeFilterCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-[#66C7F5] text-[#0C0C0C] font-mono text-[10px] font-bold flex items-center justify-center">
+            <span className="w-4 h-4 rounded-full bg-[var(--wood-info)] text-[var(--wood-seam)] font-mono text-[10px] font-bold flex items-center justify-center">
               {activeFilterCount}
             </span>
           )}
         </button>
 
+        {/* Print / PDF Export Button */}
+        <button
+          onClick={handlePrint}
+          className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+            isDarkMode
+              ? 'bg-[var(--wood-base)] border-[var(--wood-border)] text-[var(--wood-ash)] hover:bg-[var(--wood-raised)] hover:border-[var(--wood-edge)]'
+              : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100'
+          }`}
+          title="Wochenplan / Ansicht drucken oder als PDF exportieren"
+          aria-label="Wochenplan drucken oder als PDF exportieren"
+        >
+          <Printer className="w-3.5 h-3.5 text-[var(--wood-ash)]" />
+          <span>Drucken / PDF</span>
+        </button>
+
         {/* Draft Status Badge */}
         <div
-          className={`flex items-center space-x-2 px-3 py-1 rounded-md border ${
-            isDarkMode ? 'bg-[#202124] border-[#292A2E]' : 'bg-slate-100 border-slate-300'
+          className={`flex items-center space-x-2 px-3 py-1 rounded-lg border ${
+            isDarkMode ? 'bg-[var(--wood-base)] border-[var(--wood-border)]' : 'bg-slate-100 border-slate-300'
           }`}
         >
           {currentWeek.isPublished ? (
             <>
-              <div className="w-2 h-2 rounded-full bg-[#4FD18B] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-[var(--wood-moss)] animate-pulse" />
               <span
                 className={`text-xs font-medium ${
-                  isDarkMode ? 'text-[#BBC2C7]' : 'text-slate-700'
+                  isDarkMode ? 'text-[var(--wood-text-secondary)]' : 'text-slate-700'
                 }`}
               >
                 Veröffentlicht
@@ -303,10 +338,10 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
             </>
           ) : (
             <>
-              <div className="w-2 h-2 rounded-full bg-[#F4B942]" />
+              <div className="w-2 h-2 rounded-full bg-[var(--wood-resin)]" />
               <span
                 className={`text-xs font-medium ${
-                  isDarkMode ? 'text-[#BBC2C7]' : 'text-slate-700'
+                  isDarkMode ? 'text-[var(--wood-text-secondary)]' : 'text-slate-700'
                 }`}
               >
                 Entwurf ({draftChangesCount})
@@ -318,10 +353,10 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         {/* Publish Button */}
         <button
           onClick={onPublish}
-          className={`px-4 py-1.5 text-sm font-bold rounded-md transition-all shadow-lg flex items-center space-x-1.5 ${
+          className={`px-4 py-1.5 text-sm font-bold rounded-lg transition-all shadow-md flex items-center space-x-1.5 cursor-pointer ${
             blockingConflictsCount > 0
-              ? 'bg-[#FF5A4E] hover:bg-rose-600 text-white'
-              : 'bg-[#4FD18B] hover:bg-[#3dbd7a] text-[#0C0C0C]'
+              ? 'bg-[var(--wood-burnt-red)] hover:brightness-110 text-white'
+              : 'bg-[var(--wood-ash)] hover:brightness-110 text-[var(--wood-seam)]'
           }`}
         >
           {blockingConflictsCount > 0 ? (

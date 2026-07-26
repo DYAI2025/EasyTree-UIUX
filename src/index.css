@@ -2,28 +2,47 @@
 
 @layer base {
   :root {
-    --surface-page: #0C0C0C;
-    --surface-base: #171717;
-    --surface-panel: #202124;
-    --surface-raised: #292A2E;
-    --surface-hover: #32343A;
-    --surface-selected: #383B42;
+    /* MANDATORY WOOD DESIGN TOKENS (Smoked Oak Workspace) */
+    --wood-page: #161210;
+    --wood-base: #1D1713;
+    --wood-panel: #211B17;
+    --wood-raised: #2A221C;
+    --wood-selected: #33271F;
+    --wood-seam: #0C0908;
+    --wood-border: #3C3027;
+    --wood-edge: #5A4433;
+    --wood-text-primary: #F4EDE3;
+    --wood-text-secondary: #CBBBA8;
+    --wood-text-muted: #9A8874;
+    --wood-ash: #D6AE82;
+    --wood-moss: #8DA65A;
+    --wood-resin: #D7A44C;
+    --wood-burnt-red: #E36D5A;
+    --wood-info: #72AFC4;
 
-    --border-dark: #080808;
-    --border-default: #45474D;
-    --border-strong: #686B73;
-    --edge-light: #ECEFF1;
+    /* SEMANTIC SURFACE MAPPINGS FOR DARK SMOKED OAK MODE */
+    --surface-page: var(--wood-page);
+    --surface-base: var(--wood-base);
+    --surface-panel: var(--wood-panel);
+    --surface-raised: var(--wood-raised);
+    --surface-hover: #2E251E;
+    --surface-selected: var(--wood-selected);
 
-    --text-primary: #F2F4F5;
-    --text-secondary: #BBC2C7;
-    --text-muted: #858B90;
-    --focus: #8CCFFF;
+    --border-dark: var(--wood-seam);
+    --border-default: var(--wood-border);
+    --border-strong: var(--wood-edge);
+    --edge-light: #5A4433;
 
-    --status-success: #4FD18B;
-    --status-warning: #F4B942;
-    --status-critical: #FF5A4E;
-    --status-information: #66C7F5;
-    --status-neutral: #9AA0A6;
+    --text-primary: var(--wood-text-primary);
+    --text-secondary: var(--wood-text-secondary);
+    --text-muted: var(--wood-text-muted);
+    --focus: var(--wood-ash);
+
+    --status-success: var(--wood-moss);
+    --status-warning: var(--wood-resin);
+    --status-critical: var(--wood-burnt-red);
+    --status-information: var(--wood-info);
+    --status-neutral: var(--wood-text-muted);
 
     --site-blue: #4AA8E8;
     --site-green: #45B879;
@@ -36,35 +55,175 @@
   }
 
   body {
-    background-color: var(--surface-page);
-    color: var(--text-primary);
+    background-color: var(--wood-page);
+    color: var(--wood-text-primary);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
 }
 
-/* Custom scrollbars for dark theme */
+/* SUBTLE WOOD GRAIN TEXTURE UTILITIES (CSS GRADIENTS ONLY - NO EXTERNAL ASSETS) */
+.wood-grain-h {
+  background-image: 
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.08) 100%),
+    repeating-linear-gradient(
+      180deg,
+      rgba(214, 174, 130, 0.012) 0px,
+      rgba(214, 174, 130, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.08) 0px,
+      rgba(0, 0, 0, 0.08) 24px,
+      transparent 24px,
+      transparent 72px
+    );
+}
+
+.wood-grain-v {
+  background-image: 
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(0, 0, 0, 0.06) 100%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(214, 174, 130, 0.015) 0px,
+      rgba(214, 174, 130, 0.015) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+/* WOOD PANEL & BLOCK STYLING */
+.wood-panel-container {
+  background-color: var(--wood-panel);
+  border: 1px solid var(--wood-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 8px rgba(12, 9, 8, 0.4);
+  border-radius: 16px;
+}
+
+.wood-raised-card {
+  background-color: var(--wood-raised);
+  border: 1px solid var(--wood-border);
+  box-shadow: inset 0 1px 0 rgba(214, 174, 130, 0.08), 0 4px 12px rgba(12, 9, 8, 0.5);
+  border-radius: 12px;
+}
+
+.wood-burnt-edge {
+  border-bottom: 2px solid var(--wood-seam);
+  box-shadow: 0 4px 12px rgba(12, 9, 8, 0.7);
+}
+
+.wood-seam-gap {
+  background-color: var(--wood-seam);
+}
+
+/* Custom scrollbars for wood theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--surface-base);
+  background: var(--wood-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--surface-raised);
+  background: var(--wood-raised);
   border-radius: 4px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--wood-border);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--surface-hover);
+  background: var(--wood-edge);
 }
 
 .focus-ring {
   outline: none;
 }
 .focus-ring:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--wood-ash);
   outline-offset: 2px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* PRINT & PDF EXPORT STYLES (OPTIMIZED FOR FIELD DISTRIBUTION) */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  html, body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide interactive controls, modals, drawers, and buttons during print */
+  header button,
+  .no-print,
+  .fixed,
+  button {
+    display: none !important;
+  }
+
+  /* Force clean light background and high contrast text */
+  body,
+  .min-h-screen,
+  main,
+  header,
+  div {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Top command bar print layout */
+  header {
+    border-bottom: 2px solid #0f172a !important;
+    padding: 8px 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Printable borders and panels */
+  .wood-panel-container,
+  .wood-raised-card,
+  .wood-grain-h,
+  .wood-grain-v,
+  .border {
+    border: 1px solid #94a3b8 !important;
+    background: #ffffff !important;
+  }
+
+  /* Expand scrollable containers for full print visibility */
+  .overflow-x-auto,
+  .overflow-y-auto,
+  .custom-scrollbar {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Ensure headings and text are crisp black/slate */
+  h1, h2, h3, h4, p, span, div, td, th {
+    color: #0f172a !important;
+  }
+
+  /* Prevent awkward page breaks inside assignment cards */
+  .break-inside-avoid,
+  .rounded-xl,
+  .rounded-2xl {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+

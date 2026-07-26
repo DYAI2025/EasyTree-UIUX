@@ -104,23 +104,23 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
 
   return (
     <div
-      className={`mx-6 my-3 rounded-2xl border transition-all duration-200 overflow-hidden shadow-sm ${
+      className={`mx-6 my-3 rounded-2xl border transition-all duration-200 overflow-hidden shadow-md ${
         isDarkMode
-          ? 'bg-[#141416] border-[#25262B] text-[#F2F4F5]'
+          ? 'bg-[var(--wood-panel)] border-[var(--wood-border)] wood-grain-h wood-burnt-edge text-[var(--wood-text-primary)]'
           : 'bg-slate-50 border-slate-200 text-slate-900'
       }`}
     >
       {/* SUMMARY HEADER BAR */}
       <div
         className={`px-4 py-3 flex flex-wrap items-center justify-between gap-3 select-none ${
-          isDarkMode ? 'bg-[#18191D]' : 'bg-slate-100/80'
+          isDarkMode ? 'bg-[var(--wood-base)] border-b border-[var(--wood-border)]' : 'bg-slate-100/80'
         }`}
       >
         <div className="flex items-center space-x-3">
           <div
             className={`p-2 rounded-xl flex items-center justify-center ${
               isDarkMode
-                ? 'bg-violet-500/10 text-violet-400 border border-violet-500/20'
+                ? 'bg-[var(--wood-seam)] text-[var(--wood-ash)] border border-[var(--wood-border)]'
                 : 'bg-violet-100 text-violet-700'
             }`}
           >
@@ -129,18 +129,18 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
 
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--wood-text-primary)]">
                 Interaktive Ressourcen-Legende
               </h3>
               {activeSelectedCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-500 text-white font-mono animate-pulse">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--wood-ash)] text-[var(--wood-seam)] font-mono animate-pulse">
                   {activeSelectedCount} Hervorgehoben
                 </span>
               )}
             </div>
             <p
               className={`text-[11px] font-medium mt-0.5 ${
-                isDarkMode ? 'text-[#858B90]' : 'text-slate-500'
+                isDarkMode ? 'text-[var(--wood-text-muted)]' : 'text-slate-500'
               }`}
             >
               Klicken Sie auf Ressourcen, um diese auf dem Kalender hervorzuheben.
@@ -153,20 +153,20 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
           {/* Quick Metrics Badges */}
           <div
             className={`flex items-center space-x-3 px-3 py-1.5 rounded-xl border text-xs font-mono font-medium ${
-              isDarkMode ? 'bg-[#0C0C0C] border-[#25262B]' : 'bg-white border-slate-200'
+              isDarkMode ? 'bg-[var(--wood-seam)] border-[var(--wood-border)]' : 'bg-white border-slate-200'
             }`}
           >
             <span className="flex items-center space-x-1.5">
-              <Truck className="w-3.5 h-3.5 text-sky-400" />
+              <Truck className="w-3.5 h-3.5 text-[var(--wood-info)]" />
               <span>
-                <strong className="text-sky-400">{busyVehiclesCount}</strong>/{vehicles.length} KFZ
+                <strong className="text-[var(--wood-info)]">{busyVehiclesCount}</strong>/{vehicles.length} KFZ
               </span>
             </span>
-            <span className="text-[#858B90]">|</span>
+            <span className="text-[var(--wood-text-muted)]">|</span>
             <span className="flex items-center space-x-1.5">
-              <Wrench className="w-3.5 h-3.5 text-purple-400" />
+              <Wrench className="w-3.5 h-3.5 text-[var(--wood-ash)]" />
               <span>
-                <strong className="text-purple-400">{busyEquipmentCount}</strong>/{equipment.length} Geräte
+                <strong className="text-[var(--wood-ash)]">{busyEquipmentCount}</strong>/{equipment.length} Geräte
               </span>
             </span>
           </div>
@@ -177,7 +177,7 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
               onClick={onSelectAllResources}
               className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition-colors ${
                 isDarkMode
-                  ? 'bg-[#202124] hover:bg-[#2A2B30] border-[#292A2E] text-neutral-300'
+                  ? 'bg-[var(--wood-raised)] hover:bg-[var(--wood-selected)] border-[var(--wood-border)] text-[var(--wood-text-secondary)] hover:text-[var(--wood-text-primary)]'
                   : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700'
               }`}
               title="Alle Fahrzeuge und Geräte auswählen"
@@ -189,7 +189,7 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
               onClick={onSelectOnlyBusyResources}
               className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition-colors ${
                 isDarkMode
-                  ? 'bg-[#202124] hover:bg-[#2A2B30] border-[#292A2E] text-emerald-400'
+                  ? 'bg-[var(--wood-raised)] hover:bg-[var(--wood-selected)] border-[var(--wood-border)] text-[var(--wood-moss)]'
                   : 'bg-white hover:bg-slate-100 border-slate-200 text-emerald-700'
               }`}
               title="Nur im aktuellen Monat belegte Ressourcen auswählen"
@@ -200,7 +200,7 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
             {activeSelectedCount > 0 && (
               <button
                 onClick={onClearResourceSelection}
-                className="px-2.5 py-1 text-[11px] font-semibold rounded-lg border bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-400 transition-colors flex items-center space-x-1"
+                className="px-2.5 py-1 text-[11px] font-semibold rounded-lg border bg-[var(--wood-burnt-red)]/10 hover:bg-[var(--wood-burnt-red)]/20 border-[var(--wood-burnt-red)]/30 text-[var(--wood-burnt-red)] transition-colors flex items-center space-x-1"
                 title="Auswahl zurücksetzen"
               >
                 <X className="w-3 h-3" />
@@ -214,7 +214,7 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
             onClick={() => setIsExpanded(!isExpanded)}
             className={`p-1.5 rounded-lg border transition-colors ${
               isDarkMode
-                ? 'bg-[#202124] hover:bg-[#2A2B30] border-[#292A2E] text-[#BBC2C7]'
+                ? 'bg-[var(--wood-raised)] hover:bg-[var(--wood-selected)] border-[var(--wood-border)] text-[var(--wood-text-secondary)]'
                 : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-600'
             }`}
             title={isExpanded ? 'Legende einklappen' : 'Legende ausklappen'}
@@ -226,16 +226,16 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
 
       {/* EXPANDED LEGEND BODY */}
       {isExpanded && (
-        <div className="p-4 border-t border-[#25262B]/80">
+        <div className="p-4 border-t border-[var(--wood-border)]">
           {/* TAB SWITCHER */}
           <div className="flex items-center space-x-2 mb-3.5">
             <button
               onClick={() => setActiveTab('ALL')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
                 activeTab === 'ALL'
-                  ? 'bg-violet-500 text-white border-violet-500 shadow-xs'
+                  ? 'bg-[var(--wood-ash)] text-[var(--wood-seam)] font-bold border-[var(--wood-ash)] shadow-xs'
                   : isDarkMode
-                  ? 'bg-[#1C1D21] border-[#292A2E] text-[#858B90] hover:text-white'
+                  ? 'bg-[var(--wood-base)] border-[var(--wood-border)] text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
                   : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -246,13 +246,13 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
               onClick={() => setActiveTab('VEHICLES')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all flex items-center space-x-1.5 ${
                 activeTab === 'VEHICLES'
-                  ? 'bg-sky-500 text-slate-950 font-bold border-sky-500 shadow-xs'
+                  ? 'bg-[var(--wood-info)] text-[var(--wood-seam)] font-bold border-[var(--wood-info)] shadow-xs'
                   : isDarkMode
-                  ? 'bg-[#1C1D21] border-[#292A2E] text-[#858B90] hover:text-white'
+                  ? 'bg-[var(--wood-base)] border-[var(--wood-border)] text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
                   : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Truck className="w-3.5 h-3.5 text-sky-400" />
+              <Truck className="w-3.5 h-3.5" />
               <span>Fahrzeuge ({vehicles.length})</span>
             </button>
 
@@ -260,13 +260,13 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
               onClick={() => setActiveTab('EQUIPMENT')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all flex items-center space-x-1.5 ${
                 activeTab === 'EQUIPMENT'
-                  ? 'bg-purple-500 text-white font-bold border-purple-500 shadow-xs'
+                  ? 'bg-[var(--wood-moss)] text-[var(--wood-seam)] font-bold border-[var(--wood-moss)] shadow-xs'
                   : isDarkMode
-                  ? 'bg-[#1C1D21] border-[#292A2E] text-[#858B90] hover:text-white'
+                  ? 'bg-[var(--wood-base)] border-[var(--wood-border)] text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
                   : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Wrench className="w-3.5 h-3.5 text-purple-400" />
+              <Wrench className="w-3.5 h-3.5" />
               <span>Geräte ({equipment.length})</span>
             </button>
           </div>
@@ -286,9 +286,9 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                     onClick={() => onToggleResourceId(v.id)}
                     className={`p-2.5 rounded-xl border cursor-pointer select-none transition-all duration-150 relative flex flex-col justify-between ${
                       isSelected
-                        ? 'bg-sky-500/15 border-sky-400 shadow-md ring-2 ring-sky-400/30'
+                        ? 'bg-[var(--wood-info)]/15 border-[var(--wood-info)] shadow-md ring-2 ring-[var(--wood-info)]/30'
                         : isDarkMode
-                        ? 'bg-[#1A1B20] border-[#2A2C33] hover:border-[#3E414C]'
+                        ? 'wood-raised-card hover:border-[var(--wood-edge)]'
                         : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}
                   >
@@ -296,8 +296,8 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                       {/* Top Row: Icon + Plate + Check */}
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center space-x-1.5 min-w-0">
-                          <Truck className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                          <span className="font-mono text-xs font-bold text-sky-300 truncate">
+                          <Truck className="w-3.5 h-3.5 text-[var(--wood-info)] shrink-0" />
+                          <span className="font-mono text-xs font-bold text-[var(--wood-info)] truncate">
                             {v.licensePlate}
                           </span>
                         </div>
@@ -305,9 +305,9 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                         <div
                           className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
                             isSelected
-                              ? 'bg-sky-400 border-sky-400 text-slate-950'
+                              ? 'bg-[var(--wood-info)] border-[var(--wood-info)] text-[var(--wood-seam)]'
                               : isDarkMode
-                              ? 'border-[#45474D] bg-[#101114]'
+                              ? 'border-[var(--wood-border)] bg-[var(--wood-seam)]'
                               : 'border-slate-300 bg-slate-50'
                           }`}
                         >
@@ -316,20 +316,20 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                       </div>
 
                       {/* Vehicle Name & Type */}
-                      <p className="text-xs font-semibold text-neutral-200 truncate mb-2">
+                      <p className="text-xs font-semibold text-[var(--wood-text-primary)] truncate mb-2">
                         {v.name}
                       </p>
                     </div>
 
                     {/* Bottom Row: Utilization Status */}
-                    <div className="flex items-center justify-between pt-1.5 border-t border-[#282A30] text-[10px] font-mono">
+                    <div className="flex items-center justify-between pt-1.5 border-t border-[var(--wood-border)] text-[10px] font-mono">
                       <span
                         className={`px-1.5 py-0.5 rounded font-bold ${
                           stat.isDoubleBooked
-                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                            ? 'bg-[var(--wood-burnt-red)]/20 text-[var(--wood-burnt-red)] border border-[var(--wood-burnt-red)]/40'
                             : isBusy
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-neutral-800 text-neutral-400'
+                            ? 'bg-[var(--wood-moss)]/20 text-[var(--wood-moss)] border border-[var(--wood-moss)]/30'
+                            : 'bg-[var(--wood-seam)] text-[var(--wood-text-muted)]'
                         }`}
                       >
                         {stat.isDoubleBooked
@@ -339,7 +339,7 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                           : 'Frei'}
                       </span>
 
-                      <span className="text-[#858B90]">{v.type}</span>
+                      <span className="text-[var(--wood-text-muted)]">{v.type}</span>
                     </div>
                   </div>
                 );
@@ -358,9 +358,9 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                     onClick={() => onToggleResourceId(eq.id)}
                     className={`p-2.5 rounded-xl border cursor-pointer select-none transition-all duration-150 relative flex flex-col justify-between ${
                       isSelected
-                        ? 'bg-purple-500/15 border-purple-400 shadow-md ring-2 ring-purple-400/30'
+                        ? 'bg-[var(--wood-ash)]/15 border-[var(--wood-ash)] shadow-md ring-2 ring-[var(--wood-ash)]/30'
                         : isDarkMode
-                        ? 'bg-[#1A1B20] border-[#2A2C33] hover:border-[#3E414C]'
+                        ? 'wood-raised-card hover:border-[var(--wood-edge)]'
                         : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}
                   >
@@ -368,8 +368,8 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                       {/* Top Row: Icon + Name + Check */}
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center space-x-1.5 min-w-0">
-                          <Wrench className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                          <span className="text-xs font-bold text-purple-300 truncate">
+                          <Wrench className="w-3.5 h-3.5 text-[var(--wood-ash)] shrink-0" />
+                          <span className="text-xs font-bold text-[var(--wood-ash)] truncate">
                             {eq.category}
                           </span>
                         </div>
@@ -377,9 +377,9 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                         <div
                           className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
                             isSelected
-                              ? 'bg-purple-400 border-purple-400 text-slate-950'
+                              ? 'bg-[var(--wood-ash)] border-[var(--wood-ash)] text-[var(--wood-seam)]'
                               : isDarkMode
-                              ? 'border-[#45474D] bg-[#101114]'
+                              ? 'border-[var(--wood-border)] bg-[var(--wood-seam)]'
                               : 'border-slate-300 bg-slate-50'
                           }`}
                         >
@@ -388,20 +388,20 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                       </div>
 
                       {/* Equipment Name */}
-                      <p className="text-xs font-semibold text-neutral-200 truncate mb-2" title={eq.name}>
+                      <p className="text-xs font-semibold text-[var(--wood-text-primary)] truncate mb-2" title={eq.name}>
                         {eq.name}
                       </p>
                     </div>
 
                     {/* Bottom Row: Utilization Status */}
-                    <div className="flex items-center justify-between pt-1.5 border-t border-[#282A30] text-[10px] font-mono">
+                    <div className="flex items-center justify-between pt-1.5 border-t border-[var(--wood-border)] text-[10px] font-mono">
                       <span
                         className={`px-1.5 py-0.5 rounded font-bold ${
                           stat.isDoubleBooked
-                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                            ? 'bg-[var(--wood-burnt-red)]/20 text-[var(--wood-burnt-red)] border border-[var(--wood-burnt-red)]/40'
                             : isBusy
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-neutral-800 text-neutral-400'
+                            ? 'bg-[var(--wood-moss)]/20 text-[var(--wood-moss)] border border-[var(--wood-moss)]/30'
+                            : 'bg-[var(--wood-seam)] text-[var(--wood-text-muted)]'
                         }`}
                       >
                         {stat.isDoubleBooked
@@ -412,7 +412,7 @@ export const ResourceLegend: React.FC<ResourceLegendProps> = ({
                       </span>
 
                       {eq.isExclusive && (
-                        <span className="text-amber-400 font-semibold" title="Exklusive Zuordnung">
+                        <span className="text-[var(--wood-resin)] font-semibold" title="Exklusive Zuordnung">
                           Exklusiv
                         </span>
                       )}

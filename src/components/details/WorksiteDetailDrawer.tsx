@@ -98,12 +98,12 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
   const availableEquipmentToAdd = allEquipment.filter((eq) => !assignedEqIds.has(eq.id));
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-xs transition-opacity animate-fade-in">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-xs transition-opacity animate-fade-in">
       {/* DRAWER CONTAINER */}
-      <div className="w-full max-w-2xl bg-[#171717] border-l border-[#45474D] h-full overflow-y-auto flex flex-col justify-between shadow-2xl select-none">
+      <div className="w-full max-w-2xl bg-[var(--wood-panel)] border-l border-[var(--wood-border)] h-full overflow-y-auto flex flex-col justify-between shadow-2xl select-none wood-grain-v">
         {/* HEADER */}
         <div
-          className="p-5 border-b border-[#45474D] flex items-start justify-between gap-3 sticky top-0 bg-[#202124] z-10"
+          className="p-5 border-b border-[var(--wood-border)] flex items-start justify-between gap-3 sticky top-0 bg-[var(--wood-base)] z-10 wood-burnt-edge"
           style={{ borderTop: `4px solid ${worksite.hexColor || '#4AA8E8'}` }}
         >
           <div>
@@ -115,16 +115,16 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
               <Badge variant="worksite" colorKey={worksite.colorKey} size="md">
                 {worksite.code}
               </Badge>
-              <h2 className="text-xl font-bold text-neutral-100">{worksite.name}</h2>
+              <h2 className="text-xl font-bold text-[var(--wood-text-primary)]">{worksite.name}</h2>
             </div>
-            <p className="text-xs text-neutral-400 font-medium">
+            <p className="text-xs text-[var(--wood-text-secondary)] font-medium">
               Einsatz am {assignment.date} · {worksite.location}
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white hover:bg-[#32343A] rounded-lg transition focus-ring"
+            className="p-2 text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)] hover:bg-[var(--wood-raised)] rounded-lg transition focus-ring border border-transparent hover:border-[var(--wood-border)]"
             title="Schließen"
           >
             <X className="w-5 h-5" />
@@ -132,7 +132,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
         </div>
 
         {/* DRAWER BODY */}
-        <div className="p-6 space-y-6 flex-1 overflow-y-auto text-xs text-neutral-200">
+        <div className="p-6 space-y-6 flex-1 overflow-y-auto text-xs text-[var(--wood-text-secondary)] custom-scrollbar">
           {/* CONFLICTS NOTICE IF PRESENT */}
           {assignmentConflicts.length > 0 && (
             <div className="space-y-2">
@@ -141,11 +141,11 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                   key={c.id}
                   className={`p-3.5 rounded-xl border flex items-start gap-3 ${
                     c.severity === 'blocking'
-                      ? 'bg-rose-950/60 border-rose-700 text-rose-200'
-                      : 'bg-amber-950/60 border-amber-700 text-amber-200'
+                      ? 'bg-[var(--wood-burnt-red)]/20 border-[var(--wood-burnt-red)] text-rose-200'
+                      : 'bg-[var(--wood-resin)]/20 border-[var(--wood-resin)] text-amber-200'
                   }`}
                 >
-                  <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+                  <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-[var(--wood-resin)]" />
                   <div className="flex-1">
                     <div className="font-bold text-sm mb-0.5">{c.title}</div>
                     <p className="text-xs mb-1 opacity-90">{c.message}</p>
@@ -161,11 +161,11 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
           )}
 
           {/* BASIC WORKSITE & TIME METRICS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#202124] p-4 rounded-xl border border-[#32343A]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 wood-raised-card p-4">
             {/* TIME ADJUSTMENT */}
             <div>
-              <label className="text-[11px] uppercase font-bold text-neutral-400 mb-1.5 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-sky-400" />
+              <label className="text-[11px] uppercase font-bold text-[var(--wood-text-muted)] mb-1.5 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[var(--wood-info)]" />
                 Arbeitszeit & Dauer
               </label>
               <div className="flex items-center gap-2">
@@ -173,83 +173,83 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                   type="time"
                   value={assignment.startTime}
                   onChange={(e) => onTimeChange(e.target.value, assignment.endTime)}
-                  className="bg-[#171717] text-neutral-100 px-2.5 py-1.5 rounded-lg border border-[#45474D] focus:border-sky-400 text-xs font-mono"
+                  className="bg-[var(--wood-seam)] text-[var(--wood-text-primary)] px-2.5 py-1.5 rounded-lg border border-[var(--wood-border)] focus:border-[var(--wood-info)] text-xs font-mono"
                 />
-                <span className="text-neutral-500">bis</span>
+                <span className="text-[var(--wood-text-muted)]">bis</span>
                 <input
                   type="time"
                   value={assignment.endTime}
                   onChange={(e) => onTimeChange(assignment.startTime, e.target.value)}
-                  className="bg-[#171717] text-neutral-100 px-2.5 py-1.5 rounded-lg border border-[#45474D] focus:border-sky-400 text-xs font-mono"
+                  className="bg-[var(--wood-seam)] text-[var(--wood-text-primary)] px-2.5 py-1.5 rounded-lg border border-[var(--wood-border)] focus:border-[var(--wood-info)] text-xs font-mono"
                 />
               </div>
-              <div className="text-[11px] text-neutral-400 mt-1.5">
-                {durationHours} Std. Schicht · <span className="text-sky-300 font-bold">{totalPersonHours} Person-Std. gesamt</span>
+              <div className="text-[11px] text-[var(--wood-text-muted)] mt-1.5">
+                {durationHours} Std. Schicht · <span className="text-[var(--wood-moss)] font-bold">{totalPersonHours} Person-Std. gesamt</span>
               </div>
             </div>
 
             {/* LOCATION & MEETING POINT */}
             <div>
-              <label className="text-[11px] uppercase font-bold text-neutral-400 mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="text-[11px] uppercase font-bold text-[var(--wood-text-muted)] mb-1.5 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[var(--wood-moss)]" />
                 Adresse & Treffpunkt
               </label>
-              <div className="text-xs font-medium text-neutral-200">{worksite.address}</div>
-              <div className="text-[11px] text-amber-300 mt-0.5">
+              <div className="text-xs font-medium text-[var(--wood-text-primary)]">{worksite.address}</div>
+              <div className="text-[11px] text-[var(--wood-resin)] mt-0.5">
                 Treffpunkt: {worksite.meetingPoint}
               </div>
             </div>
           </div>
 
           {/* TASK DESCRIPTION */}
-          <div className="bg-[#202124] p-4 rounded-xl border border-[#32343A]">
-            <h4 className="text-xs uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-purple-400" />
+          <div className="wood-raised-card p-4">
+            <h4 className="text-xs uppercase font-bold text-[var(--wood-text-muted)] mb-1 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-[var(--wood-ash)]" />
               Tätigkeit & Auftrag
             </h4>
-            <p className="text-xs text-neutral-200 font-medium mb-2">
+            <p className="text-xs text-[var(--wood-text-primary)] font-medium mb-2">
               {assignment.activityName}
             </p>
-            <p className="text-[11px] text-neutral-400 italic">
+            <p className="text-[11px] text-[var(--wood-text-muted)] italic">
               {worksite.description}
             </p>
           </div>
 
           {/* WEATHER WIDGET */}
           {weather && (
-            <div className="bg-[#202124] p-4 rounded-xl border border-[#32343A]">
+            <div className="wood-raised-card p-4">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-xs uppercase font-bold text-neutral-400 flex items-center gap-1.5">
-                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <h4 className="text-xs uppercase font-bold text-[var(--wood-text-muted)] flex items-center gap-1.5">
+                  <Sun className="w-3.5 h-3.5 text-[var(--wood-resin)]" />
                   Wetterprognose ({weather.location})
                 </h4>
-                <span className="text-[10px] text-neutral-500">{weather.updatedAt}</span>
+                <span className="text-[10px] text-[var(--wood-text-muted)]">{weather.updatedAt}</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-center text-xs bg-[#171717] p-2.5 rounded-lg border border-[#292A2E]">
+              <div className="grid grid-cols-3 gap-2 text-center text-xs bg-[var(--wood-seam)] p-2.5 rounded-lg border border-[var(--wood-border)]">
                 <div>
-                  <div className="text-neutral-400 text-[10px]">Temperatur</div>
-                  <div className="font-bold text-neutral-100 text-sm">
+                  <div className="text-[var(--wood-text-muted)] text-[10px]">Temperatur</div>
+                  <div className="font-bold text-[var(--wood-text-primary)] text-sm">
                     {weather.tempLow}°C - {weather.tempHigh}°C
                   </div>
                 </div>
                 <div>
-                  <div className="text-neutral-400 text-[10px]">Niederschlag</div>
-                  <div className="font-bold text-sky-300 text-sm">
+                  <div className="text-[var(--wood-text-muted)] text-[10px]">Niederschlag</div>
+                  <div className="font-bold text-[var(--wood-info)] text-sm">
                     {weather.precipitationProb}%
                   </div>
                 </div>
                 <div>
-                  <div className="text-neutral-400 text-[10px]">Max. Wind</div>
-                  <div className="font-bold text-teal-300 text-sm">
+                  <div className="text-[var(--wood-text-muted)] text-[10px]">Max. Wind</div>
+                  <div className="font-bold text-[var(--wood-moss)] text-sm">
                     {weather.maxWindKmH} km/h
                   </div>
                 </div>
               </div>
 
               {weather.warningText && (
-                <div className="mt-2.5 p-2 rounded-lg bg-amber-950/80 border border-amber-700 text-amber-200 text-xs flex items-center gap-2">
-                  <Wind className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="mt-2.5 p-2 rounded-lg bg-[var(--wood-resin)]/20 border border-[var(--wood-resin)] text-[var(--wood-resin)] text-xs flex items-center gap-2">
+                  <Wind className="w-4 h-4 text-[var(--wood-resin)] shrink-0" />
                   <span>{weather.warningText}</span>
                 </div>
               )}
@@ -257,16 +257,16 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
           )}
 
           {/* ASSIGNED TEAM MEMBERS SECTION */}
-          <div className="bg-[#202124] p-4 rounded-xl border border-[#32343A]">
+          <div className="wood-raised-card p-4">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-xs uppercase font-bold text-neutral-300 flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-sky-400" />
+              <h4 className="text-xs uppercase font-bold text-[var(--wood-text-primary)] flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-[var(--wood-info)]" />
                 Eingesetztes Team ({assignedEmployees.length})
               </h4>
             </div>
 
             {assignedEmployees.length === 0 ? (
-              <div className="text-amber-400 italic text-xs mb-3">
+              <div className="text-[var(--wood-resin)] italic text-xs mb-3">
                 Keine Mitarbeiter zugewiesen!
               </div>
             ) : (
@@ -274,7 +274,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                 {assignedEmployees.map((emp) => (
                   <div
                     key={emp.id}
-                    className="flex items-center justify-between p-2.5 bg-[#171717] rounded-lg border border-[#292A2E] hover:border-neutral-500 transition"
+                    className="flex items-center justify-between p-2.5 bg-[var(--wood-seam)] rounded-lg border border-[var(--wood-border)] hover:border-[var(--wood-edge)] transition"
                   >
                     <Avatar employee={emp} size="md" showName showRoleBadge />
 
@@ -284,7 +284,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                         {emp.skills.slice(0, 2).map((sk) => (
                           <span
                             key={sk}
-                            className="text-[9px] bg-[#292A2E] text-neutral-300 px-1.5 py-0.5 rounded border border-[#32343A]"
+                            className="text-[9px] bg-[var(--wood-base)] text-[var(--wood-text-secondary)] px-1.5 py-0.5 rounded border border-[var(--wood-border)]"
                           >
                             {sk}
                           </span>
@@ -293,7 +293,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
 
                       <button
                         onClick={() => onRemoveEmployee(emp.id)}
-                        className="p-1 text-neutral-500 hover:text-rose-400 hover:bg-rose-950/40 rounded transition focus-ring"
+                        className="p-1 text-[var(--wood-text-muted)] hover:text-[var(--wood-burnt-red)] hover:bg-[var(--wood-burnt-red)]/20 rounded transition focus-ring"
                         title="Aus Team entfernen"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -316,7 +316,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                       e.target.value = '';
                     }
                   }}
-                  className="flex-1 bg-[#171717] text-neutral-200 border border-[#45474D] rounded-lg px-2.5 py-1.5 text-xs focus:border-sky-400"
+                  className="flex-1 bg-[var(--wood-seam)] text-[var(--wood-text-primary)] border border-[var(--wood-border)] rounded-lg px-2.5 py-1.5 text-xs focus:border-[var(--wood-info)]"
                 >
                   <option value="">+ Mitarbeiter zum Team hinzufügen...</option>
                   {availableEmployeesToAdd.map((e) => (
@@ -332,9 +332,9 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
           {/* ASSIGNED VEHICLES & EQUIPMENT */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* VEHICLES */}
-            <div className="bg-[#202124] p-4 rounded-xl border border-[#32343A]">
-              <h4 className="text-xs uppercase font-bold text-neutral-300 mb-2.5 flex items-center gap-1.5">
-                <Truck className="w-3.5 h-3.5 text-sky-400" />
+            <div className="wood-raised-card p-4">
+              <h4 className="text-xs uppercase font-bold text-[var(--wood-text-primary)] mb-2.5 flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-[var(--wood-info)]" />
                 Fahrzeuge ({assignedVehicles.length})
               </h4>
 
@@ -342,15 +342,15 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                 {assignedVehicles.map((v) => (
                   <div
                     key={v.id}
-                    className="flex items-center justify-between p-2 bg-[#171717] rounded-lg border border-[#292A2E]"
+                    className="flex items-center justify-between p-2 bg-[var(--wood-seam)] rounded-lg border border-[var(--wood-border)]"
                   >
                     <div>
-                      <div className="font-semibold text-neutral-200 text-xs">{v.name}</div>
-                      <div className="text-[10px] text-neutral-400">{v.licensePlate}</div>
+                      <div className="font-semibold text-[var(--wood-text-primary)] text-xs">{v.name}</div>
+                      <div className="text-[10px] text-[var(--wood-text-muted)]">{v.licensePlate}</div>
                     </div>
                     <button
                       onClick={() => onRemoveVehicle(v.id)}
-                      className="p-1 text-neutral-500 hover:text-rose-400"
+                      className="p-1 text-[var(--wood-text-muted)] hover:text-[var(--wood-burnt-red)]"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -368,7 +368,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                       e.target.value = '';
                     }
                   }}
-                  className="w-full bg-[#171717] text-neutral-200 border border-[#45474D] rounded-lg px-2 py-1.5 text-xs"
+                  className="w-full bg-[var(--wood-seam)] text-[var(--wood-text-primary)] border border-[var(--wood-border)] rounded-lg px-2 py-1.5 text-xs"
                 >
                   <option value="">+ Fahrzeug zuweisen...</option>
                   {availableVehiclesToAdd.map((v) => (
@@ -381,9 +381,9 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
             </div>
 
             {/* EQUIPMENT */}
-            <div className="bg-[#202124] p-4 rounded-xl border border-[#32343A]">
-              <h4 className="text-xs uppercase font-bold text-neutral-300 mb-2.5 flex items-center gap-1.5">
-                <Wrench className="w-3.5 h-3.5 text-purple-400" />
+            <div className="wood-raised-card p-4">
+              <h4 className="text-xs uppercase font-bold text-[var(--wood-text-primary)] mb-2.5 flex items-center gap-1.5">
+                <Wrench className="w-3.5 h-3.5 text-[var(--wood-ash)]" />
                 Geräte ({assignedEquipment.length})
               </h4>
 
@@ -391,19 +391,19 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                 {assignedEquipment.map((eq) => (
                   <div
                     key={eq.id}
-                    className="flex items-center justify-between p-2 bg-[#171717] rounded-lg border border-[#292A2E]"
+                    className="flex items-center justify-between p-2 bg-[var(--wood-seam)] rounded-lg border border-[var(--wood-border)]"
                   >
                     <div>
-                      <div className="font-semibold text-neutral-200 text-xs">{eq.name}</div>
+                      <div className="font-semibold text-[var(--wood-text-primary)] text-xs">{eq.name}</div>
                       {eq.isExclusive && (
-                        <span className="text-[9px] text-amber-400 uppercase font-bold">
+                        <span className="text-[9px] text-[var(--wood-resin)] uppercase font-bold">
                           Exklusiv
                         </span>
                       )}
                     </div>
                     <button
                       onClick={() => onRemoveEquipment(eq.id)}
-                      className="p-1 text-neutral-500 hover:text-rose-400"
+                      className="p-1 text-[var(--wood-text-muted)] hover:text-[var(--wood-burnt-red)]"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -421,7 +421,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
                       e.target.value = '';
                     }
                   }}
-                  className="w-full bg-[#171717] text-neutral-200 border border-[#45474D] rounded-lg px-2 py-1.5 text-xs"
+                  className="w-full bg-[var(--wood-seam)] text-[var(--wood-text-primary)] border border-[var(--wood-border)] rounded-lg px-2 py-1.5 text-xs"
                 >
                   <option value="">+ Gerät zuweisen...</option>
                   {availableEquipmentToAdd.map((eq) => (
@@ -436,10 +436,10 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
         </div>
 
         {/* FOOTER ACTIONS */}
-        <div className="p-4 border-t border-[#45474D] bg-[#202124] flex items-center justify-between gap-3 sticky bottom-0 z-10">
+        <div className="p-4 border-t border-[var(--wood-border)] bg-[var(--wood-base)] flex items-center justify-between gap-3 sticky bottom-0 z-10">
           <button
             onClick={() => onDeleteAssignment(assignment.id)}
-            className="px-3 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition focus-ring"
+            className="px-3 py-2 bg-[var(--wood-burnt-red)]/20 hover:bg-[var(--wood-burnt-red)]/40 text-[var(--wood-burnt-red)] border border-[var(--wood-burnt-red)]/50 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition focus-ring"
           >
             <Trash2 className="w-3.5 h-3.5" />
             Einsatz löschen
@@ -447,7 +447,7 @@ export const WorksiteDetailDrawer: React.FC<WorksiteDetailDrawerProps> = ({
 
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-neutral-950 font-bold rounded-lg text-xs transition focus-ring shadow-md"
+            className="px-5 py-2 bg-[var(--wood-moss)] hover:brightness-110 text-[var(--wood-seam)] font-bold rounded-lg text-xs transition focus-ring shadow-md"
           >
             Fertigstellen & Schließen
           </button>
