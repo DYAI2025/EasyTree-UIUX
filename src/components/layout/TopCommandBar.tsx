@@ -15,6 +15,7 @@ import {
   Plus,
   Printer,
   FileSpreadsheet,
+  Award,
 } from 'lucide-react';
 import { PlanningWeek } from '../../types';
 
@@ -23,8 +24,8 @@ interface TopCommandBarProps {
   onPrevWeek: () => void;
   onNextWeek: () => void;
   onToday: () => void;
-  activeView: 'MONTH' | '1W' | '4W';
-  onViewChange: (view: 'MONTH' | '1W' | '4W') => void;
+  activeView: 'MONTH' | '1W' | '4W' | 'SKILLS';
+  onViewChange: (view: 'MONTH' | '1W' | '4W' | 'SKILLS') => void;
   onOpenFilters: () => void;
   activeFilterCount: number;
   draftChangesCount: number;
@@ -190,6 +191,22 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
             }`}
           >
             4 Wochen
+          </button>
+
+          <button
+            onClick={() => onViewChange('SKILLS')}
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all flex items-center space-x-1.5 ${
+              activeView === 'SKILLS'
+                ? isDarkMode
+                  ? 'bg-gradient-to-r from-amber-500/30 to-emerald-500/30 text-amber-300 border border-amber-400/50 shadow-xs font-bold'
+                  : 'bg-[#3B4A3B] text-[#E9F4EA] border border-[#3B4A3B] shadow-xs font-bold'
+                : isDarkMode
+                ? 'text-[var(--wood-text-muted)] hover:text-[var(--wood-text-primary)]'
+                : 'text-[#4A5E4A] hover:text-[#3B4A3B]'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5 text-amber-400" />
+            <span>Skills Matrix</span>
           </button>
         </nav>
       </div>

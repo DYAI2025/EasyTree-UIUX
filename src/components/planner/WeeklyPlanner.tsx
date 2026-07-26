@@ -12,6 +12,7 @@ import {
 } from '../../types';
 import { DayColumn } from './DayColumn';
 import { UnassignedPanel } from './UnassignedPanel';
+import { WeatherForecastOverlay } from '../weather/WeatherForecastOverlay';
 
 interface WeeklyPlannerProps {
   currentWeek: PlanningWeek;
@@ -30,6 +31,7 @@ interface WeeklyPlannerProps {
   onAddEmployeeToAssignment?: (assignment: WorksiteAssignment) => void;
   onSwapEmployeesInAssignment?: (assignment: WorksiteAssignment) => void;
   onDeleteAssignment?: (assignmentId: string) => void;
+  onFilterWeatherConflicts?: () => void;
 }
 
 export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
@@ -49,6 +51,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
   onAddEmployeeToAssignment,
   onSwapEmployeesInAssignment,
   onDeleteAssignment,
+  onFilterWeatherConflicts,
 }) => {
   // Generate date array for Mon-Fri of the selected week
   // e.g. currentWeek.startDate = '2026-09-14'
@@ -82,52 +85,66 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
   }, [currentWeek.startDate, currentWeek.weekNumber]);
 
   return (
-    <div className="max-w-[1800px] mx-auto p-4 md:p-6 flex flex-col xl:flex-row gap-6 items-start">
-      {/* CENTRAL WEEK BOARD GRID (MON - FRI) */}
-      <div className="flex-1 w-full overflow-x-auto pb-4 custom-scrollbar">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 min-w-[1420px]">
-          {weekDates.map((day) => {
-            const dayAssignments = assignments.filter((a) => a.date === day.date);
-            const dayWeather = weatherData.find((w) => w.date === day.date);
+    <div className="flex flex-col w-full">
+      {/* 5-DAY WEATHER FORECAST & OPERATIONAL RISK OVERLAY */}
+      <WeatherForecastOverlay
+        startDate={currentWeek.startDate}
+        weatherData={weatherData}
+        assignments={assignments}
+        employees={employees}
+        equipment={equipment}
+        worksites={worksites}
+        onFilterWeatherConflicts={onFilterWeatherConflicts}
+      />
 
-            return (
-              <DayColumn
-                key={day.date}
-                date={day.date}
-                dayLabel={day.label}
-                isToday={day.isToday}
-                assignments={dayAssignments}
-                worksites={worksites}
-                employees={employees}
-                vehicles={vehicles}
-                equipment={equipment}
-                conflicts={conflicts}
-                weather={dayWeather}
-                onCardClick={onSelectAssignment}
-                onAddAssignmentClick={onAddAssignment}
-                onAddEmployeeClick={onAddEmployeeToAssignment}
-                onSwapEmployeeClick={onSwapEmployeesInAssignment}
-                onDeleteAssignmentClick={onDeleteAssignment}
-              />
-            );
-          })}
+      <div className="max-w-[1800px] w-full mx-auto p-4 md:p-6 flex flex-col xl:flex-row gap-6 items-start">
+        {/* CENTRAL WEEK BOARD GRID (MON - FRI) */}
+        <div className="flex-1 w-full overflow-x-auto pb-4 custom-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 min-w-[1420px]">
+            {weekDates.map((day) => {
+              const dayAssignments = assignments.filter((a) => a.date === day.date);
+              const dayWeather = weatherData.find((w) => w.date === day.date);
+
+              return (
+                <DayColumn
+                  key={day.date}
+                  date={day.date}
+                  dayLabel={day.label}
+                  isToday={day.isToday}
+                  assignments={dayAssignments}
+                  worksites={worksites}
+                  employees={employees}
+                  vehicles={vehicles}
+                  equipment={equipment}
+                  conflicts={conflicts}
+                  weather={dayWeather}
+                  onCardClick={onSelectAssignment}
+                  onAddAssignmentClick={onAddAssignment}
+                  onAddEmployeeClick={onAddEmployeeToAssignment}
+                  onSwapEmployeeClick={onSwapEmployeesInAssignment}
+                  onDeleteAssignmentClick={onDeleteAssignment}
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* RIGHT SIDE PANEL: UNASSIGNED / ABSENT STAFF & RESOURCES */}
-      <div className="w-full xl:w-80 shrink-0 xl:sticky xl:top-4">
-        <UnassignedPanel
-          employees={employees}
-          absences={absences}
-          vehicles={vehicles}
-          equipment={equipment}
-          currentAssignments={assignments}
-          weekStartDate={currentWeek.startDate}
-          weekEndDate={currentWeek.endDate}
-          onAssignEmployeeQuick={onQuickAssignEmployee}
-          onAssignResourceQuick={onQuickAssignResource}
-        />
+        {/* RIGHT SIDE PANEL: UNASSIGNED / ABSENT STAFF & RESOURCES */}
+        <div className="w-full xl:w-80 shrink-0 xl:sticky xl:top-4">
+          <UnassignedPanel
+            employees={employees}
+            absences={absences}
+            vehicles={vehicles}
+            equipment={equipment}
+            currentAssignments={assignments}
+            weekStartDate={currentWeek.startDate}
+            weekEndDate={currentWeek.endDate}
+            onAssignEmployeeQuick={onQuickAssignEmployee}
+            onAssignResourceQuick={onQuickAssignResource}
+          />
+        </div>
       </div>
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Worksite,
   Employee,
@@ -7,6 +7,7 @@ import {
   WorksiteAssignment,
   CalendarFilters,
   PlanningConflict,
+  WeatherSummary,
 } from '../../types';
 import {
   ChevronLeft,
@@ -22,9 +23,25 @@ import {
   Sparkles,
   MapPin,
   AlertTriangle,
+  Sun,
+  Cloud,
+  CloudRain,
+  CloudLightning,
+  Wind,
+  Flame,
+  Award,
 } from 'lucide-react';
 import { getHolidayInfo, isBrandenburgHolidayOrWeekend } from '../../domain/holidaysEngine';
 import { ResourceLegend } from './ResourceLegend';
+import { WeatherForecastOverlay } from '../weather/WeatherForecastOverlay';
+import { getWeatherForDate } from '../../utils/weatherEngine';
+import { SkillHeatmapBar } from './SkillHeatmapBar';
+import { SkillHeatmapModal } from './SkillHeatmapModal';
+import {
+  evaluateDaySkillCoverage,
+  getSkillHeatmapStyles,
+  DaySkillHeatmapResult,
+} from '../../utils/skillHeatmapEngine';
 
 interface MonthCalendarViewProps {
   currentMonthDate: string; // YYYY-MM
@@ -34,6 +51,7 @@ interface MonthCalendarViewProps {
   employees: Employee[];
   vehicles: Vehicle[];
   equipment: Equipment[];
+  weatherData?: WeatherSummary[];
   calendarFilters: CalendarFilters;
   onUpdateCalendarFilters: (filters: Partial<CalendarFilters>) => void;
   onSelectAssignment: (assignmentId: string) => void;
@@ -50,6 +68,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
   employees,
   vehicles,
   equipment,
+  weatherData = [],
   calendarFilters,
   onUpdateCalendarFilters,
   onSelectAssignment,
@@ -207,6 +226,78 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
     }
     return true;
   });
+
+  // Heatmap State
+  const [isHeatmapActive, setIsHeatmapActive] = useState(true);
+  const [selectedSkillFilter, setSelectedSkillFilter] = useState('ALL');
+  const [activeSkillModalDate, setActiveSkillModalDate] = useState<string | null>(null);
+
+  // Extract available required skills across all worksites
+  const availableSkills = useMemo(() => {
+    const set = new Set<string>();
+    worksites.forEach((w) => {
+      (w.requiredSkills || []).forEach((s) => set.add(s));
+    });
+    return Array.from(set).sort();
+  }, [worksites]);
+
+  // Pre-calculate Day Skill Coverage for all days
+  const dayHeatmapEvaluations = useMemo(() => {
+    const map = new Map<string, DaySkillHeatmapResult>();
+    filteredDays.forEach((day) => {
+      const evalResult = evaluateDaySkillCoverage({
+        dateIso: day.dateIso,
+        assignments,
+        worksites,
+        employees,
+      });
+
+      // Filter check if specific skill is selected
+      if (selectedSkillFilter !== 'ALL') {
+        const matchesSkill = evalResult.worksiteEvaluations.some((e) =>
+          e.requiredSkills.includes(selectedSkillFilter)
+        );
+        if (!matchesSkill) {
+          map.set(day.dateIso, {
+            ...evalResult,
+            heatLevel: 'NONE',
+          });
+          return;
+        }
+      }
+
+      map.set(day.dateIso, evalResult);
+    });
+    return map;
+  }, [filteredDays, assignments, worksites, employees, selectedSkillFilter]);
+
+  // Monthly Heatmap Statistics
+  const monthlyHeatmapStats = useMemo(() => {
+    let totalDaysWithJobs = 0;
+    let optimalDaysCount = 0;
+    let slightGapDaysCount = 0;
+    let criticalGapDaysCount = 0;
+    let totalMissingSkillSlots = 0;
+
+    dayHeatmapEvaluations.forEach((evalResult) => {
+      if (evalResult.totalWorksitesCount > 0) {
+        totalDaysWithJobs++;
+        if (evalResult.heatLevel === 'OPTIMAL') optimalDaysCount++;
+        else if (evalResult.heatLevel === 'SLIGHT_GAP') slightGapDaysCount++;
+        else if (evalResult.heatLevel === 'CRITICAL_GAP') criticalGapDaysCount++;
+
+        totalMissingSkillSlots += evalResult.missingSkillsCount;
+      }
+    });
+
+    return {
+      totalDaysWithJobs,
+      optimalDaysCount,
+      slightGapDaysCount,
+      criticalGapDaysCount,
+      totalMissingSkillSlots,
+    };
+  }, [dayHeatmapEvaluations]);
 
   return (
     <div
@@ -437,6 +528,28 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
         isDarkMode={isDarkMode}
       />
 
+      {/* 5-DAY WEATHER FORECAST & OPERATIONAL RISK OVERLAY */}
+      <WeatherForecastOverlay
+        startDate={currentMonthDate === '2026-09' ? '2026-09-14' : `${currentMonthDate}-01`}
+        weatherData={weatherData}
+        assignments={assignments}
+        employees={employees}
+        equipment={equipment}
+        worksites={worksites}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* QUALIFICATION / SKILL DEFICIT HEATMAP BAR */}
+      <SkillHeatmapBar
+        isHeatmapActive={isHeatmapActive}
+        onToggleHeatmap={() => setIsHeatmapActive((prev) => !prev)}
+        selectedSkillFilter={selectedSkillFilter}
+        onSelectSkillFilter={setSelectedSkillFilter}
+        availableSkills={availableSkills}
+        stats={monthlyHeatmapStats}
+        isDarkMode={isDarkMode}
+      />
+
       {/* WEEKDAY HEADERS */}
       {!calendarFilters.hideWeekendsAndBBHolidays ? (
         <div
@@ -474,6 +587,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
           // Check for regional holiday
           const holidayInfo = getHolidayInfo(day.dateIso, 'BB'); // Brandenburg check
           const isWeekend = day.dayOfWeek === 5 || day.dayOfWeek === 6; // Sat or Sun
+          const dayWeather = getWeatherForDate(day.dateIso, 'Potsdam', weatherData);
 
           // Filter assignments for this date
           const dayAssignments = assignments.filter((asg) => {
@@ -491,11 +605,20 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
           const isToday =
             new Date().toISOString().split('T')[0] === day.dateIso;
 
+          // Skill Heatmap Evaluation for this day
+          const dayHeat = dayHeatmapEvaluations.get(day.dateIso);
+          const heatStyles =
+            isHeatmapActive && dayHeat && dayHeat.totalWorksitesCount > 0
+              ? getSkillHeatmapStyles(dayHeat.heatLevel, isDarkMode)
+              : null;
+
           return (
             <div
               key={day.dateIso}
               className={`min-h-[160px] p-3.5 rounded-2xl border flex flex-col justify-between group relative transition-all shadow-md ${
-                !day.isCurrentMonth
+                heatStyles
+                  ? `${heatStyles.bg} ${heatStyles.border} ${heatStyles.glow}`
+                  : !day.isCurrentMonth
                   ? isDarkMode
                     ? 'bg-[var(--wood-seam)]/60 border-[var(--wood-border)]/50 text-[var(--wood-text-muted)]/50'
                     : 'bg-slate-50/70 border-slate-200/60 text-slate-400'
@@ -514,7 +637,7 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
             >
               {/* Day Header */}
               <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-[var(--wood-border)]/40">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
                   <span
                     className={`font-mono text-sm font-bold ${
                       isToday
@@ -531,6 +654,40 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                     {day.dayNumber}
                   </span>
 
+                  {/* Day Weather Badge */}
+                  {dayWeather && (
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 border shrink-0 ${
+                        dayWeather.maxWindKmH >= 45 || dayWeather.warningText
+                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold animate-pulse'
+                          : dayWeather.maxWindKmH >= 30
+                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                          : isDarkMode
+                          ? 'bg-[var(--wood-base)] text-[var(--wood-text-secondary)] border-[var(--wood-border)]'
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}
+                      title={`Wetter: ${dayWeather.tempHigh}°C / ${dayWeather.tempLow}°C, Wind max. ${dayWeather.maxWindKmH} km/h${
+                        dayWeather.warningText ? ` - ${dayWeather.warningText}` : ''
+                      }`}
+                    >
+                      {dayWeather.condition === 'sunny' ? (
+                        <Sun className="w-3 h-3 text-amber-400" />
+                      ) : dayWeather.condition === 'rainy' ? (
+                        <CloudRain className="w-3 h-3 text-sky-400" />
+                      ) : dayWeather.condition === 'windy' ? (
+                        <Wind className="w-3 h-3 text-teal-400" />
+                      ) : dayWeather.condition === 'stormy' ? (
+                        <CloudLightning className="w-3 h-3 text-rose-400" />
+                      ) : (
+                        <Cloud className="w-3 h-3 text-slate-400" />
+                      )}
+                      <span>{dayWeather.tempHigh}°</span>
+                      {dayWeather.maxWindKmH >= 45 && (
+                        <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0 ml-0.5" />
+                      )}
+                    </span>
+                  )}
+
                   {/* Holiday Badge */}
                   {holidayInfo && (
                     <span
@@ -539,6 +696,26 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
                     >
                       🎉 {holidayInfo.name}
                     </span>
+                  )}
+
+                  {/* Skill Heatmap Badge */}
+                  {isHeatmapActive && dayHeat && dayHeat.totalWorksitesCount > 0 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSkillModalDate(day.dateIso);
+                      }}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold flex items-center gap-1 border shrink-0 transition-transform hover:scale-105 cursor-pointer ${heatStyles?.pillBg}`}
+                      title={`Qualifikationsabdeckung: ${dayHeat.coverageRatio}% (Klicken für Details)`}
+                    >
+                      <Flame className={`w-3 h-3 ${heatStyles?.iconColor} ${dayHeat.heatLevel === 'CRITICAL_GAP' ? 'animate-pulse' : ''}`} />
+                      <span>{dayHeat.coverageRatio}%</span>
+                      {dayHeat.missingSkillsCount > 0 && (
+                        <span className="px-1 py-0.2 rounded bg-rose-500 text-white font-black text-[9px] ml-0.5">
+                          -{dayHeat.missingSkillsCount}
+                        </span>
+                      )}
+                    </button>
                   )}
                 </div>
 
@@ -721,6 +898,22 @@ export const MonthCalendarView: React.FC<MonthCalendarViewProps> = ({
           );
         })}
       </div>
+
+      {/* Skill Gap Heatmap Detail Modal */}
+      {activeSkillModalDate && dayHeatmapEvaluations.get(activeSkillModalDate) && (
+        <SkillHeatmapModal
+          evaluation={dayHeatmapEvaluations.get(activeSkillModalDate)!}
+          employees={employees}
+          absences={[]}
+          assignments={assignments}
+          onClose={() => setActiveSkillModalDate(null)}
+          onAssignEmployeeQuick={(employeeId, assignmentId) => {
+            onSelectAssignment(assignmentId);
+            setActiveSkillModalDate(null);
+          }}
+          isDarkMode={isDarkMode}
+        />
+      )}
     </div>
   );
 };

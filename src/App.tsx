@@ -31,6 +31,7 @@ import { SummaryTiles } from './components/layout/SummaryTiles';
 import { MonthCalendarView } from './components/planner/MonthCalendarView';
 import { WeeklyPlanner } from './components/planner/WeeklyPlanner';
 import { FourWeekPlanner } from './components/planner/FourWeekPlanner';
+import { SkillsMatrixDashboard } from './components/skills/SkillsMatrixDashboard';
 import { WorksiteDetailDrawer } from './components/details/WorksiteDetailDrawer';
 import { PublishModal } from './components/modals/PublishModal';
 import { FilterModal } from './components/modals/FilterModal';
@@ -60,9 +61,9 @@ export default function App() {
     return stored !== null ? stored === 'true' : true;
   });
 
-  const [activeView, setActiveView] = useState<'MONTH' | '1W' | '4W'>(() => {
+  const [activeView, setActiveView] = useState<'MONTH' | '1W' | '4W' | 'SKILLS'>(() => {
     const stored = localStorage.getItem('arboscus_active_view');
-    if (stored === 'MONTH' || stored === '1W' || stored === '4W') {
+    if (stored === 'MONTH' || stored === '1W' || stored === '4W' || stored === 'SKILLS') {
       return stored;
     }
     return 'MONTH';
@@ -698,6 +699,7 @@ export default function App() {
             employees={employees}
             vehicles={vehicles}
             equipment={equipment}
+            weatherData={weatherData}
             calendarFilters={calendarFilters}
             onUpdateCalendarFilters={(f) => setCalendarFilters((prev) => ({ ...prev, ...f }))}
             onSelectAssignment={(id) => setSelectedAssignmentId(id)}
@@ -723,8 +725,11 @@ export default function App() {
             onAddEmployeeToAssignment={(asg) => setSelectedAssignmentId(asg.id)}
             onSwapEmployeesInAssignment={(asg) => setSelectedAssignmentId(asg.id)}
             onDeleteAssignment={handleDeleteAssignment}
+            onFilterWeatherConflicts={() =>
+              setFilters((f) => ({ ...f, onlyWarnings: !f.onlyWarnings }))
+            }
           />
-        ) : (
+        ) : activeView === '4W' ? (
           <FourWeekPlanner
             weeks={weeks}
             assignments={assignments}
@@ -734,6 +739,19 @@ export default function App() {
               setCurrentWeekIndex(weekIdx);
               setActiveView('1W');
             }}
+          />
+        ) : (
+          <SkillsMatrixDashboard
+            employees={employees}
+            worksites={worksites}
+            assignments={assignments}
+            absences={absences}
+            onSelectWorksite={(wsId) => {
+              const asg = assignments.find((a) => a.worksiteId === wsId);
+              if (asg) setSelectedAssignmentId(asg.id);
+            }}
+            onAssignEmployeeQuick={handleQuickAssignEmployee}
+            isDarkMode={isDarkMode}
           />
         )}
       </main>
