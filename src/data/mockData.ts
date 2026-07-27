@@ -9,6 +9,7 @@ import {
   WeatherSummary,
   EmployeeStatusOption,
   EmploymentTypeOption,
+  TeamTemplate,
 } from '../types';
 
 export const INITIAL_EMPLOYEE_STATUSES: EmployeeStatusOption[] = [
@@ -811,5 +812,47 @@ export const INITIAL_ASSIGNMENTS: WorksiteAssignment[] = [
     assignedVehicleIds: ['veh-2'],
     assignedEquipmentIds: ['eq-5'],
     status: 'draft',
+  },
+];
+
+export const INITIAL_TEAM_TEMPLATES: TeamTemplate[] = [
+  {
+    id: 'tmpl-1',
+    name: 'Kolonne Alpha (Großbaumschnitt & SKT)',
+    description: 'Spezialteam für anspruchsvolle Baumfällungen und Kronenpflege im Seilkletterverfahren mit Großhäcksler.',
+    leaderEmployeeId: 'emp-1',
+    employeeIds: ['emp-1', 'emp-4', 'emp-8'],
+    vehicleIds: ['veh-1'],
+    equipmentIds: ['eq-2', 'eq-4'],
+    color: '#10B981',
+    tags: ['SKT-B', 'Fällung', 'Großhäcksler'],
+    defaultActivityName: 'Kronenpflege & Gefahrenfällung',
+    createdAt: '2026-07-01',
+  },
+  {
+    id: 'tmpl-2',
+    name: 'Kolonne Beta (Steiger & Hubarbeitsbühne)',
+    description: 'Effiziente Kolonne für Park- und Alleenpflege mittels 24m Hubarbeitsbühne und LKW-Transporter.',
+    leaderEmployeeId: 'emp-2',
+    employeeIds: ['emp-2', 'emp-5', 'emp-10'],
+    vehicleIds: ['veh-2'],
+    equipmentIds: ['eq-1'],
+    color: '#3B82F6',
+    tags: ['Steiger', 'LKW-Bühne', 'Alleenpflege'],
+    defaultActivityName: 'Lichtraumprofil & Totholz',
+    createdAt: '2026-07-05',
+  },
+  {
+    id: 'tmpl-3',
+    name: 'Notfall- & Wurzelfräs-Gespann',
+    description: 'Schnelles Einsatzteam für Sturmschäden, Nachbereitung und Wurzelstockfräsen vor Ort.',
+    leaderEmployeeId: 'emp-3',
+    employeeIds: ['emp-3', 'emp-6', 'emp-15'],
+    vehicleIds: ['veh-3', 'veh-4'],
+    equipmentIds: ['eq-3'],
+    color: '#F59E0B',
+    tags: ['Stumpfentfernung', 'Notfall', 'Anhänger'],
+    defaultActivityName: 'Wurzelstockfräsen & Nachbereitung',
+    createdAt: '2026-07-10',
   },
 ];

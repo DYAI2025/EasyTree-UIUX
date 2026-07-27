@@ -114,6 +114,20 @@ export interface Equipment {
   notes?: string;
 }
 
+export interface TeamTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  leaderEmployeeId?: string;
+  employeeIds: string[];
+  vehicleIds: string[];
+  equipmentIds: string[];
+  color?: string;
+  tags?: string[];
+  defaultActivityName?: string;
+  createdAt?: string;
+}
+
 export type AssignmentStatus = 'draft' | 'published' | 'modified';
 
 export interface WorksiteAssignment {

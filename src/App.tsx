@@ -14,6 +14,7 @@ import {
   CalendarFilters,
   EmployeeStatusOption,
   EmploymentTypeOption,
+  TeamTemplate,
 } from './types';
 import {
   INITIAL_EMPLOYEES,
@@ -26,6 +27,7 @@ import {
   INITIAL_ASSIGNMENTS,
   INITIAL_EMPLOYEE_STATUSES,
   INITIAL_EMPLOYMENT_TYPES,
+  INITIAL_TEAM_TEMPLATES,
 } from './data/mockData';
 import { detectConflicts } from './domain/conflictEngine';
 import { computeBentoMetrics } from './domain/capacityEngine';
@@ -34,6 +36,8 @@ import {
   normalizeEmployee,
   normalizeVehicle,
   normalizeEquipment,
+  normalizeAssignment,
+  normalizeTeamTemplate,
   loadAndNormalizeStorage,
 } from './domain/normalizeData';
 import { exportWeekAssignmentsToCSV } from './utils/csvExport';
@@ -56,7 +60,14 @@ export default function App() {
   const [weeks, setWeeks] = useState(INITIAL_WEEKS);
   const [absences] = useState(INITIAL_ABSENCES);
   const [weatherData] = useState(INITIAL_WEATHER);
-  const [assignments, setAssignments] = useState<WorksiteAssignment[]>(INITIAL_ASSIGNMENTS);
+  const [assignments, setAssignments] = useState<WorksiteAssignment[]>(() =>
+    loadAndNormalizeStorage(
+      'arboscus_v2_assignments',
+      normalizeAssignment,
+      INITIAL_ASSIGNMENTS,
+      'arboscus_assignments'
+    )
+  );
 
   // PERSISTENT MASTER DATA STATES (arboscus_v2_*)
   const [employees, setEmployees] = useState<Employee[]>(() =>
@@ -121,6 +132,14 @@ export default function App() {
     )
   );
 
+  const [teamTemplates, setTeamTemplates] = useState<TeamTemplate[]>(() =>
+    loadAndNormalizeStorage(
+      'arboscus_v2_team_templates',
+      normalizeTeamTemplate,
+      INITIAL_TEAM_TEMPLATES
+    )
+  );
+
   // PERSISTENCE EFFECTS
   useEffect(() => {
     localStorage.setItem('arboscus_v2_employees', JSON.stringify(employees));
@@ -145,6 +164,34 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('arboscus_v2_equipment', JSON.stringify(equipment));
   }, [equipment]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_team_templates', JSON.stringify(teamTemplates));
+  }, [teamTemplates]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_assignments', JSON.stringify(assignments));
+  }, [assignments]);
+
+  // TEAM TEMPLATE HANDLERS
+  const handleCreateTeamTemplate = useCallback((template: Omit<TeamTemplate, 'id'>) => {
+    const newTmpl: TeamTemplate = {
+      ...template,
+      id: `tmpl_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setTeamTemplates((prev) => [newTmpl, ...prev]);
+  }, []);
+
+  const handleUpdateTeamTemplate = useCallback((updatedTemplate: TeamTemplate) => {
+    setTeamTemplates((prev) =>
+      prev.map((t) => (t.id === updatedTemplate.id ? updatedTemplate : t))
+    );
+  }, []);
+
+  const handleDeleteTeamTemplate = useCallback((templateId: string) => {
+    setTeamTemplates((prev) => prev.filter((t) => t.id !== templateId));
+  }, []);
 
   // MASTER DATA HANDLERS
   const handleAddStatusOption = useCallback((label: string): EmployeeStatusOption => {
@@ -567,7 +614,7 @@ export default function App() {
     const newAsg: WorksiteAssignment = {
       ...newAssignmentData,
       id: `asg-quick-${Date.now()}`,
-      status: 'draft', // Created as draft initially as required
+      status: newAssignmentData.status || 'draft',
     };
 
     setAssignments((prev) => [...prev, newAsg]);
@@ -1070,6 +1117,8 @@ export default function App() {
             vehicles={vehicles}
             equipment={equipment}
             assignments={assignments}
+            teamTemplates={teamTemplates}
+            absences={absences}
             statusOptions={statusOptions}
             employmentTypeOptions={employmentTypeOptions}
             onAddStatusOption={handleAddStatusOption}
@@ -1082,6 +1131,10 @@ export default function App() {
             onUpdateEquipment={handleUpdateEquipment}
             onCreateWorksite={handleCreateWorksite}
             onUpdateWorksite={handleUpdateWorksite}
+            onCreateTeamTemplate={handleCreateTeamTemplate}
+            onUpdateTeamTemplate={handleUpdateTeamTemplate}
+            onDeleteTeamTemplate={handleDeleteTeamTemplate}
+            onAddAssignment={handleAddAssignment}
             onMarkCommentRead={handleMarkCommentRead}
             isDarkMode={isDarkMode}
           />
@@ -1162,6 +1215,9 @@ export default function App() {
           employees={employees}
           vehicles={vehicles}
           equipment={equipment}
+          teamTemplates={teamTemplates}
+          absences={absences}
+          assignments={assignments}
           onAddAssignment={handleQuickAddSubmit}
           onAddWorksite={handleAddWorksite}
           isDarkMode={isDarkMode}

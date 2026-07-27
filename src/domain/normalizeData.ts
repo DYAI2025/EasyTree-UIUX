@@ -3,6 +3,8 @@ import {
   Employee,
   Vehicle,
   Equipment,
+  WorksiteAssignment,
+  TeamTemplate,
   EmployeeStatusOption,
   EmploymentTypeOption,
 } from '../types';
@@ -177,6 +179,77 @@ export function normalizeEquipment(raw: any): Equipment {
     lastMaintenanceDate: raw.lastMaintenanceDate ? String(raw.lastMaintenanceDate) : undefined,
     maintenanceIntervalDays: Number(raw.maintenanceIntervalDays) > 0 ? Number(raw.maintenanceIntervalDays) : 30,
     notes: String(raw.notes || ''),
+  };
+}
+
+/**
+ * Normalizes a WorksiteAssignment object to guarantee all required fields exist.
+ */
+export function normalizeAssignment(raw: any): WorksiteAssignment {
+  if (!raw || typeof raw !== 'object') {
+    return {
+      id: `asg_${Date.now()}`,
+      worksiteId: 'ws_1',
+      date: '2026-09-14',
+      startTime: '07:00',
+      endTime: '15:30',
+      activityName: 'Baumpflege',
+      assignedEmployeeIds: [],
+      assignedVehicleIds: [],
+      assignedEquipmentIds: [],
+      status: 'published',
+    };
+  }
+
+  return {
+    id: String(raw.id || `asg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`),
+    worksiteId: String(raw.worksiteId || 'ws_1'),
+    date: String(raw.date || '2026-09-14'),
+    startTime: String(raw.startTime || '07:00'),
+    endTime: String(raw.endTime || '15:30'),
+    activityName: String(raw.activityName || 'Arbeitseinsatz'),
+    assignedEmployeeIds: Array.isArray(raw.assignedEmployeeIds)
+      ? raw.assignedEmployeeIds.map(String)
+      : [],
+    assignedVehicleIds: Array.isArray(raw.assignedVehicleIds)
+      ? raw.assignedVehicleIds.map(String)
+      : [],
+    assignedEquipmentIds: Array.isArray(raw.assignedEquipmentIds)
+      ? raw.assignedEquipmentIds.map(String)
+      : [],
+    status: raw.status || 'published',
+  };
+}
+
+/**
+ * Normalizes a TeamTemplate object.
+ */
+export function normalizeTeamTemplate(raw: any): TeamTemplate {
+  if (!raw || typeof raw !== 'object') {
+    return {
+      id: `tmpl_${Date.now()}`,
+      name: 'Unbenannte Team-Vorlage',
+      description: '',
+      employeeIds: [],
+      vehicleIds: [],
+      equipmentIds: [],
+      color: '#10B981',
+      tags: [],
+    };
+  }
+
+  return {
+    id: String(raw.id || `tmpl_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`),
+    name: String(raw.name || 'Neues Team'),
+    description: String(raw.description || ''),
+    leaderEmployeeId: raw.leaderEmployeeId ? String(raw.leaderEmployeeId) : undefined,
+    employeeIds: Array.isArray(raw.employeeIds) ? raw.employeeIds.map(String) : [],
+    vehicleIds: Array.isArray(raw.vehicleIds) ? raw.vehicleIds.map(String) : [],
+    equipmentIds: Array.isArray(raw.equipmentIds) ? raw.equipmentIds.map(String) : [],
+    color: String(raw.color || '#10B981'),
+    tags: Array.isArray(raw.tags) ? raw.tags.map(String) : [],
+    defaultActivityName: raw.defaultActivityName ? String(raw.defaultActivityName) : undefined,
+    createdAt: raw.createdAt ? String(raw.createdAt) : new Date().toISOString().split('T')[0],
   };
 }
 
