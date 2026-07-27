@@ -29,6 +29,13 @@ import {
 } from './data/mockData';
 import { detectConflicts } from './domain/conflictEngine';
 import { computeBentoMetrics } from './domain/capacityEngine';
+import {
+  normalizeWorksite,
+  normalizeEmployee,
+  normalizeVehicle,
+  normalizeEquipment,
+  loadAndNormalizeStorage,
+} from './domain/normalizeData';
 import { exportWeekAssignmentsToCSV } from './utils/csvExport';
 import { TopCommandBar } from './components/layout/TopCommandBar';
 import { SummaryTiles } from './components/layout/SummaryTiles';
@@ -52,25 +59,14 @@ export default function App() {
   const [assignments, setAssignments] = useState<WorksiteAssignment[]>(INITIAL_ASSIGNMENTS);
 
   // PERSISTENT MASTER DATA STATES (arboscus_v2_*)
-  const [employees, setEmployees] = useState<Employee[]>(() => {
-    const stored = localStorage.getItem('arboscus_v2_employees');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((e: any) => ({
-            ...e,
-            statusId: e.statusId || 'emp-status-1',
-            employmentTypeId: e.employmentTypeId || 'emp-type-1',
-            skills: e.skills || [],
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to parse employees', err);
-      }
-    }
-    return INITIAL_EMPLOYEES;
-  });
+  const [employees, setEmployees] = useState<Employee[]>(() =>
+    loadAndNormalizeStorage(
+      'arboscus_v2_employees',
+      normalizeEmployee,
+      INITIAL_EMPLOYEES,
+      'arboscus_employees'
+    )
+  );
 
   const [statusOptions, setStatusOptions] = useState<EmployeeStatusOption[]>(() => {
     const stored = localStorage.getItem('arboscus_v2_emp_statuses');
@@ -98,64 +94,32 @@ export default function App() {
     return INITIAL_EMPLOYMENT_TYPES;
   });
 
-  const [worksites, setWorksites] = useState<Worksite[]>(() => {
-    const stored = localStorage.getItem('arboscus_v2_worksites');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((w: any) => ({
-            ...w,
-            orderDescription: w.orderDescription || w.description || '',
-            requirements: w.requirements || [],
-            todoItems: w.todoItems || [],
-            comments: w.comments || [],
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to parse worksites', err);
-      }
-    }
-    return INITIAL_WORKSITES;
-  });
+  const [worksites, setWorksites] = useState<Worksite[]>(() =>
+    loadAndNormalizeStorage(
+      'arboscus_v2_worksites',
+      normalizeWorksite,
+      INITIAL_WORKSITES,
+      'arboscus_worksites'
+    )
+  );
 
-  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
-    const stored = localStorage.getItem('arboscus_v2_vehicles');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((v: any) => ({
-            ...v,
-            nextTuvDate: v.nextTuvDate || '2026-12-31',
-            quantity: 1,
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to parse vehicles', err);
-      }
-    }
-    return INITIAL_VEHICLES;
-  });
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() =>
+    loadAndNormalizeStorage(
+      'arboscus_v2_vehicles',
+      normalizeVehicle,
+      INITIAL_VEHICLES,
+      'arboscus_vehicles'
+    )
+  );
 
-  const [equipment, setEquipment] = useState<Equipment[]>(() => {
-    const stored = localStorage.getItem('arboscus_v2_equipment');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((eq: any) => ({
-            ...eq,
-            quantity: eq.quantity || 1,
-            maintenanceIntervalDays: eq.maintenanceIntervalDays || 30,
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to parse equipment', err);
-      }
-    }
-    return INITIAL_EQUIPMENT;
-  });
+  const [equipment, setEquipment] = useState<Equipment[]>(() =>
+    loadAndNormalizeStorage(
+      'arboscus_v2_equipment',
+      normalizeEquipment,
+      INITIAL_EQUIPMENT,
+      'arboscus_equipment'
+    )
+  );
 
   // PERSISTENCE EFFECTS
   useEffect(() => {
@@ -274,6 +238,7 @@ export default function App() {
   });
 
   const [simulatedRole, setSimulatedRole] = useState<'ADMINISTRATOR' | 'GESCHÄFTSFÜHRUNG'>('ADMINISTRATOR');
+  const [showSummaryTiles, setShowSummaryTiles] = useState<boolean>(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
 
   // MODAL STATES
@@ -740,6 +705,63 @@ export default function App() {
     );
   };
 
+  const handleApplyTeamRecommendation = useCallback(
+    (
+      worksiteId: string,
+      date: string,
+      employeeIds: string[],
+      vehicleIds: string[],
+      equipmentIds: string[]
+    ) => {
+      pushHistory();
+
+      const existingIndex = assignments.findIndex(
+        (a) => a.worksiteId === worksiteId && a.date === date
+      );
+
+      if (existingIndex >= 0) {
+        setAssignments((prev) =>
+          prev.map((a, idx) => {
+            if (idx === existingIndex) {
+              return {
+                ...a,
+                assignedEmployeeIds: Array.from(
+                  new Set([...a.assignedEmployeeIds, ...employeeIds])
+                ),
+                assignedVehicleIds: Array.from(
+                  new Set([...a.assignedVehicleIds, ...vehicleIds])
+                ),
+                assignedEquipmentIds: Array.from(
+                  new Set([...a.assignedEquipmentIds, ...equipmentIds])
+                ),
+                status: 'modified',
+              };
+            }
+            return a;
+          })
+        );
+        setSelectedAssignmentId(assignments[existingIndex].id);
+      } else {
+        const worksiteObj = worksites.find((w) => w.id === worksiteId);
+        const newAsg: WorksiteAssignment = {
+          id: `asg-rec-${Date.now()}`,
+          worksiteId,
+          date,
+          startTime: '07:00',
+          endTime: '15:30',
+          activityName: worksiteObj ? worksiteObj.name : 'Baustellenarbeiten',
+          assignedEmployeeIds: employeeIds,
+          assignedVehicleIds: vehicleIds,
+          assignedEquipmentIds: equipmentIds,
+          status: 'draft',
+        };
+        setAssignments((prev) => [...prev, newAsg]);
+        setSelectedAssignmentId(newAsg.id);
+      }
+    },
+    [assignments, worksites, pushHistory]
+  );
+
   const handleAddVehicleToAssignment = (vehicleId: string) => {
     if (!selectedAssignmentId) return;
     pushHistory();
@@ -953,18 +975,22 @@ export default function App() {
         onToggleDarkMode={handleToggleDarkMode}
         onOpenQuickAdd={() => handleOpenQuickAdd()}
         onExportCSV={handleExportCSV}
+        showSummaryTiles={showSummaryTiles}
+        onToggleSummaryTiles={() => setShowSummaryTiles((prev) => !prev)}
       />
 
-      {/* 2. SUMMARY TILES (BENTO GRID) */}
-      <SummaryTiles
-        metrics={metrics}
-        onFilterConflicts={() => setFilters((f) => ({ ...f, onlyConflicts: !f.onlyConflicts }))}
-        onFilterUnassigned={() =>
-          setFilters((f) => ({ ...f, onlyUnassigned: !f.onlyUnassigned }))
-        }
-        onFilterResources={() => setIsFilterModalOpen(true)}
-        isDarkMode={isDarkMode}
-      />
+      {/* 2. SUMMARY TILES (OPTIONAL BENTO GRID) */}
+      {showSummaryTiles && (
+        <SummaryTiles
+          metrics={metrics}
+          onFilterConflicts={() => setFilters((f) => ({ ...f, onlyConflicts: !f.onlyConflicts }))}
+          onFilterUnassigned={() =>
+            setFilters((f) => ({ ...f, onlyUnassigned: !f.onlyUnassigned }))
+          }
+          onFilterResources={() => setIsFilterModalOpen(true)}
+          isDarkMode={isDarkMode}
+        />
+      )}
 
       {/* 3. MAIN WORKSPACE VIEW (MONTH CALENDAR / 1W / 4W) */}
       <main className="flex-1 overflow-x-hidden">
@@ -1025,12 +1051,16 @@ export default function App() {
             employees={employees}
             worksites={worksites}
             assignments={assignments}
+            vehicles={vehicles}
+            equipment={equipment}
             absences={absences}
             onSelectWorksite={(wsId) => {
               const asg = assignments.find((a) => a.worksiteId === wsId);
               if (asg) setSelectedAssignmentId(asg.id);
             }}
             onAssignEmployeeQuick={handleQuickAssignEmployee}
+            onUpdateWorksite={handleUpdateWorksite}
+            onApplyTeamRecommendation={handleApplyTeamRecommendation}
             isDarkMode={isDarkMode}
           />
         ) : (

@@ -90,8 +90,10 @@ export const WorksiteForm: React.FC<WorksiteFormProps> = ({
     initialWorksite?.comments || []
   );
 
-  // New requirement input state
+  // New requirement & custom skill input state
   const [newReqText, setNewReqText] = useState('');
+  const [customSkillText, setCustomSkillText] = useState('');
+  const [skillFilterQuery, setSkillFilterQuery] = useState('');
 
   // Validation Error State
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -102,6 +104,15 @@ export const WorksiteForm: React.FC<WorksiteFormProps> = ({
     } else {
       setRequiredSkills([...requiredSkills, skill]);
     }
+  };
+
+  const handleAddCustomSkill = () => {
+    if (!customSkillText.trim()) return;
+    const trimmed = customSkillText.trim();
+    if (!requiredSkills.includes(trimmed)) {
+      setRequiredSkills([...requiredSkills, trimmed]);
+    }
+    setCustomSkillText('');
   };
 
   const handleAddRequirement = () => {
@@ -363,8 +374,57 @@ export const WorksiteForm: React.FC<WorksiteFormProps> = ({
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           Erforderliche Qualifikationen / Skills für diese Baustelle
         </label>
-        <div className="flex flex-wrap gap-1.5 p-2.5 rounded-lg bg-[var(--wood-seam)] border border-[var(--wood-border)]">
-          {AVAILABLE_SKILLS_LIST.map((sk) => {
+
+        {/* Selected skills badges */}
+        {requiredSkills.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-lg bg-[var(--wood-base)] border border-amber-500/30">
+            <span className="text-[10px] font-mono font-bold text-amber-400 uppercase mr-1">
+              Ausgewählt ({requiredSkills.length}):
+            </span>
+            {requiredSkills.map((sk) => (
+              <span
+                key={sk}
+                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"
+              >
+                <span>{sk}</span>
+                <button
+                  type="button"
+                  onClick={() => handleToggleSkill(sk)}
+                  className="hover:text-rose-400 transition ml-0.5"
+                  title="Qualifikation entfernen"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Filter Master List of Available Skills */}
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={skillFilterQuery}
+            onChange={(e) => setSkillFilterQuery(e.target.value)}
+            placeholder="Qualifikationen filtern (z.B. SKT, Baum, Ersthelfer)..."
+            className="w-full px-3 py-1.5 rounded-lg text-xs border bg-[var(--wood-seam)] border-[var(--wood-border)] text-[var(--wood-text-primary)]"
+          />
+          {skillFilterQuery && (
+            <button
+              type="button"
+              onClick={() => setSkillFilterQuery('')}
+              className="px-2 py-1 text-xs text-[var(--wood-text-muted)] hover:text-white"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Preset Skill Buttons */}
+        <div className="flex flex-wrap gap-1.5 p-2.5 rounded-lg bg-[var(--wood-seam)] border border-[var(--wood-border)] max-h-[160px] overflow-y-auto custom-scrollbar">
+          {AVAILABLE_SKILLS_LIST.filter((sk) =>
+            sk.toLowerCase().includes(skillFilterQuery.toLowerCase().trim())
+          ).map((sk) => {
             const isSelected = requiredSkills.includes(sk);
             return (
               <button
@@ -382,6 +442,37 @@ export const WorksiteForm: React.FC<WorksiteFormProps> = ({
               </button>
             );
           })}
+          {AVAILABLE_SKILLS_LIST.filter((sk) =>
+            sk.toLowerCase().includes(skillFilterQuery.toLowerCase().trim())
+          ).length === 0 && (
+            <span className="text-xs text-[var(--wood-text-muted)] italic p-1">
+              Keine passenden vordefinierten Qualifikationen gefunden.
+            </span>
+          )}
+        </div>
+
+        {/* Add Custom Skill Input */}
+        <div className="flex items-center gap-2 pt-1">
+          <input
+            type="text"
+            value={customSkillText}
+            onChange={(e) => setCustomSkillText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddCustomSkill();
+              }
+            }}
+            placeholder="Eigene Qualifikation / Zertifikat eingeben..."
+            className="flex-1 px-3 py-1.5 rounded-lg text-xs border bg-[var(--wood-seam)] border-[var(--wood-border)] text-[var(--wood-text-primary)]"
+          />
+          <button
+            type="button"
+            onClick={handleAddCustomSkill}
+            className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold rounded-lg transition"
+          >
+            + Hinzufügen
+          </button>
         </div>
       </div>
 
