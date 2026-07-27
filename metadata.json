@@ -1,6 +1,6 @@
 {
-  "name": "Arboscus Teamplaner",
-  "description": "Desktop Workforce & Assignment Planner for EasyTree/Arboscus (Dark Field Planning Board)",
+  "name": "EasyTree",
+  "description": "Desktop Workforce & Assignment Planner for EasyTree (Dark Field Planning Board)",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

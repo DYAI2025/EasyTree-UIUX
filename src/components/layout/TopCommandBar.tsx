@@ -106,7 +106,7 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
           </div>
           <div>
             <span className="font-extrabold text-sm sm:text-base tracking-tight block leading-tight">
-              Arboscus
+              EasyTree
             </span>
             <span className="text-[10px] font-mono text-[var(--wood-text-muted)] block leading-none">
               Teamplaner
