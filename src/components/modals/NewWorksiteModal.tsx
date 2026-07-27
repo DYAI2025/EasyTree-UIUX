@@ -100,6 +100,10 @@ export const NewWorksiteModal: React.FC<NewWorksiteModalProps> = ({
       hexColor: selectedHex,
       description: description.trim() || 'Keine Zusatzangaben hinterlegt.',
       requiredSkills,
+      orderDescription: description.trim() || 'Keine Zusatzangaben hinterlegt.',
+      requirements: [],
+      todoItems: [],
+      comments: [],
     };
 
     onAddWorksite(newWorksite);

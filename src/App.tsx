@@ -12,6 +12,8 @@ import {
   Equipment,
   FilterOptions,
   CalendarFilters,
+  EmployeeStatusOption,
+  EmploymentTypeOption,
 } from './types';
 import {
   INITIAL_EMPLOYEES,
@@ -22,6 +24,8 @@ import {
   INITIAL_WEEKS,
   INITIAL_WEATHER,
   INITIAL_ASSIGNMENTS,
+  INITIAL_EMPLOYEE_STATUSES,
+  INITIAL_EMPLOYMENT_TYPES,
 } from './data/mockData';
 import { detectConflicts } from './domain/conflictEngine';
 import { computeBentoMetrics } from './domain/capacityEngine';
@@ -32,6 +36,7 @@ import { MonthCalendarView } from './components/planner/MonthCalendarView';
 import { WeeklyPlanner } from './components/planner/WeeklyPlanner';
 import { FourWeekPlanner } from './components/planner/FourWeekPlanner';
 import { SkillsMatrixDashboard } from './components/skills/SkillsMatrixDashboard';
+import { MasterDataView } from './components/master-data/MasterDataView';
 import { WorksiteDetailDrawer } from './components/details/WorksiteDetailDrawer';
 import { PublishModal } from './components/modals/PublishModal';
 import { FilterModal } from './components/modals/FilterModal';
@@ -42,13 +47,212 @@ export default function App() {
   const [currentWeekIndex, setCurrentWeekIndex] = useState<number>(0);
   const [currentMonthDate, setCurrentMonthDate] = useState<string>('2026-09');
   const [weeks, setWeeks] = useState(INITIAL_WEEKS);
-  const [employees] = useState<Employee[]>(INITIAL_EMPLOYEES);
   const [absences] = useState(INITIAL_ABSENCES);
-  const [worksites, setWorksites] = useState<Worksite[]>(INITIAL_WORKSITES);
-  const [vehicles] = useState<Vehicle[]>(INITIAL_VEHICLES);
-  const [equipment] = useState<Equipment[]>(INITIAL_EQUIPMENT);
-  const [assignments, setAssignments] = useState<WorksiteAssignment[]>(INITIAL_ASSIGNMENTS);
   const [weatherData] = useState(INITIAL_WEATHER);
+  const [assignments, setAssignments] = useState<WorksiteAssignment[]>(INITIAL_ASSIGNMENTS);
+
+  // PERSISTENT MASTER DATA STATES (arboscus_v2_*)
+  const [employees, setEmployees] = useState<Employee[]>(() => {
+    const stored = localStorage.getItem('arboscus_v2_employees');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((e: any) => ({
+            ...e,
+            statusId: e.statusId || 'emp-status-1',
+            employmentTypeId: e.employmentTypeId || 'emp-type-1',
+            skills: e.skills || [],
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to parse employees', err);
+      }
+    }
+    return INITIAL_EMPLOYEES;
+  });
+
+  const [statusOptions, setStatusOptions] = useState<EmployeeStatusOption[]>(() => {
+    const stored = localStorage.getItem('arboscus_v2_emp_statuses');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (err) {
+        console.error('Failed to parse statuses', err);
+      }
+    }
+    return INITIAL_EMPLOYEE_STATUSES;
+  });
+
+  const [employmentTypeOptions, setEmploymentTypeOptions] = useState<EmploymentTypeOption[]>(() => {
+    const stored = localStorage.getItem('arboscus_v2_employment_types');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (err) {
+        console.error('Failed to parse employment types', err);
+      }
+    }
+    return INITIAL_EMPLOYMENT_TYPES;
+  });
+
+  const [worksites, setWorksites] = useState<Worksite[]>(() => {
+    const stored = localStorage.getItem('arboscus_v2_worksites');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((w: any) => ({
+            ...w,
+            orderDescription: w.orderDescription || w.description || '',
+            requirements: w.requirements || [],
+            todoItems: w.todoItems || [],
+            comments: w.comments || [],
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to parse worksites', err);
+      }
+    }
+    return INITIAL_WORKSITES;
+  });
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
+    const stored = localStorage.getItem('arboscus_v2_vehicles');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((v: any) => ({
+            ...v,
+            nextTuvDate: v.nextTuvDate || '2026-12-31',
+            quantity: 1,
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to parse vehicles', err);
+      }
+    }
+    return INITIAL_VEHICLES;
+  });
+
+  const [equipment, setEquipment] = useState<Equipment[]>(() => {
+    const stored = localStorage.getItem('arboscus_v2_equipment');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((eq: any) => ({
+            ...eq,
+            quantity: eq.quantity || 1,
+            maintenanceIntervalDays: eq.maintenanceIntervalDays || 30,
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to parse equipment', err);
+      }
+    }
+    return INITIAL_EQUIPMENT;
+  });
+
+  // PERSISTENCE EFFECTS
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_employees', JSON.stringify(employees));
+  }, [employees]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_emp_statuses', JSON.stringify(statusOptions));
+  }, [statusOptions]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_employment_types', JSON.stringify(employmentTypeOptions));
+  }, [employmentTypeOptions]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_worksites', JSON.stringify(worksites));
+  }, [worksites]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_vehicles', JSON.stringify(vehicles));
+  }, [vehicles]);
+
+  useEffect(() => {
+    localStorage.setItem('arboscus_v2_equipment', JSON.stringify(equipment));
+  }, [equipment]);
+
+  // MASTER DATA HANDLERS
+  const handleAddStatusOption = useCallback((label: string): EmployeeStatusOption => {
+    const newOpt: EmployeeStatusOption = {
+      id: `emp-status-${Date.now()}`,
+      label,
+    };
+    setStatusOptions((prev) => [...prev, newOpt]);
+    return newOpt;
+  }, []);
+
+  const handleAddEmploymentTypeOption = useCallback((label: string): EmploymentTypeOption => {
+    const newOpt: EmploymentTypeOption = {
+      id: `emp-type-${Date.now()}`,
+      label,
+    };
+    setEmploymentTypeOptions((prev) => [...prev, newOpt]);
+    return newOpt;
+  }, []);
+
+  const handleCreateEmployee = useCallback((empData: Omit<Employee, 'id'> | Employee) => {
+    const newEmp: Employee = {
+      ...empData,
+      id: 'id' in empData && empData.id ? empData.id : `emp_${Date.now()}`,
+    };
+    setEmployees((prev) => [newEmp, ...prev]);
+  }, []);
+
+  const handleUpdateEmployee = useCallback((updatedEmp: Employee) => {
+    setEmployees((prev) => prev.map((e) => (e.id === updatedEmp.id ? updatedEmp : e)));
+  }, []);
+
+  const handleCreateVehicle = useCallback((veh: Vehicle) => {
+    setVehicles((prev) => [veh, ...prev]);
+  }, []);
+
+  const handleUpdateVehicle = useCallback((updatedVeh: Vehicle) => {
+    setVehicles((prev) => prev.map((v) => (v.id === updatedVeh.id ? updatedVeh : v)));
+  }, []);
+
+  const handleCreateEquipment = useCallback((eq: Equipment) => {
+    setEquipment((prev) => [eq, ...prev]);
+  }, []);
+
+  const handleUpdateEquipment = useCallback((updatedEq: Equipment) => {
+    setEquipment((prev) => prev.map((e) => (e.id === updatedEq.id ? updatedEq : e)));
+  }, []);
+
+  const handleCreateWorksite = useCallback((wsData: Omit<Worksite, 'id'> | Worksite) => {
+    const newWs: Worksite = {
+      ...wsData,
+      id: 'id' in wsData && wsData.id ? wsData.id : `ws_${Date.now()}`,
+    };
+    setWorksites((prev) => [newWs, ...prev]);
+  }, []);
+
+  const handleUpdateWorksite = useCallback((updatedWs: Worksite) => {
+    setWorksites((prev) => prev.map((w) => (w.id === updatedWs.id ? updatedWs : w)));
+  }, []);
+
+  const handleMarkCommentRead = useCallback((worksiteId: string) => {
+    setWorksites((prev) =>
+      prev.map((w) =>
+        w.id === worksiteId
+          ? {
+              ...w,
+              comments: w.comments?.map((c) => ({ ...c, isUnread: false })),
+            }
+          : w
+      )
+    );
+  }, []);
 
   // ADD NEW WORKSITE HANDLER
   const handleAddWorksite = useCallback((newWs: Worksite) => {
@@ -61,10 +265,10 @@ export default function App() {
     return stored !== null ? stored === 'true' : true;
   });
 
-  const [activeView, setActiveView] = useState<'MONTH' | '1W' | '4W' | 'SKILLS'>(() => {
+  const [activeView, setActiveView] = useState<'MONTH' | '1W' | '4W' | 'SKILLS' | 'MASTER_DATA'>(() => {
     const stored = localStorage.getItem('arboscus_active_view');
-    if (stored === 'MONTH' || stored === '1W' || stored === '4W' || stored === 'SKILLS') {
-      return stored;
+    if (stored === 'MONTH' || stored === '1W' || stored === '4W' || stored === 'SKILLS' || stored === 'MASTER_DATA') {
+      return stored as any;
     }
     return 'MONTH';
   });
@@ -444,6 +648,80 @@ export default function App() {
     );
   };
 
+  const handleMoveEmployeeBetweenAssignments = useCallback(
+    (employeeId: string, targetAssignmentId: string, sourceAssignmentId?: string) => {
+      if (sourceAssignmentId === targetAssignmentId) return;
+
+      pushHistory();
+
+      setAssignments((prev) =>
+        prev.map((a) => {
+          // If it's the target assignment, add employee if not present
+          if (a.id === targetAssignmentId) {
+            if (!a.assignedEmployeeIds.includes(employeeId)) {
+              return {
+                ...a,
+                assignedEmployeeIds: [...a.assignedEmployeeIds, employeeId],
+                status: 'modified',
+              };
+            }
+            return a;
+          }
+
+          // If it's the source assignment, remove employee
+          if (sourceAssignmentId && sourceAssignmentId !== 'unassigned' && a.id === sourceAssignmentId) {
+            return {
+              ...a,
+              assignedEmployeeIds: a.assignedEmployeeIds.filter((id) => id !== employeeId),
+              status: 'modified',
+            };
+          }
+
+          return a;
+        })
+      );
+
+      setWeeks((prevWeeks) =>
+        prevWeeks.map((w, idx) =>
+          idx === currentWeekIndex
+            ? { ...w, draftChangesCount: w.draftChangesCount + 1, isPublished: false }
+            : w
+        )
+      );
+    },
+    [pushHistory, currentWeekIndex]
+  );
+
+  const handleUnassignEmployeeFromAssignment = useCallback(
+    (employeeId: string, sourceAssignmentId: string) => {
+      if (!sourceAssignmentId || sourceAssignmentId === 'unassigned') return;
+
+      pushHistory();
+
+      setAssignments((prev) =>
+        prev.map((a) => {
+          if (a.id === sourceAssignmentId) {
+            return {
+              ...a,
+              assignedEmployeeIds: a.assignedEmployeeIds.filter((id) => id !== employeeId),
+              status: 'modified',
+            };
+          }
+          return a;
+        })
+      );
+
+      setWeeks((prevWeeks) =>
+        prevWeeks.map((w, idx) =>
+          idx === currentWeekIndex
+            ? { ...w, draftChangesCount: w.draftChangesCount + 1, isPublished: false }
+            : w
+        )
+      );
+    },
+    [pushHistory, currentWeekIndex]
+  );
+
   const handleRemoveEmployeeFromAssignment = (employeeId: string) => {
     if (!selectedAssignmentId) return;
     pushHistory();
@@ -728,6 +1006,8 @@ export default function App() {
             onFilterWeatherConflicts={() =>
               setFilters((f) => ({ ...f, onlyWarnings: !f.onlyWarnings }))
             }
+            onMoveEmployee={handleMoveEmployeeBetweenAssignments}
+            onUnassignEmployee={handleUnassignEmployeeFromAssignment}
           />
         ) : activeView === '4W' ? (
           <FourWeekPlanner
@@ -740,7 +1020,7 @@ export default function App() {
               setActiveView('1W');
             }}
           />
-        ) : (
+        ) : activeView === 'SKILLS' ? (
           <SkillsMatrixDashboard
             employees={employees}
             worksites={worksites}
@@ -751,6 +1031,28 @@ export default function App() {
               if (asg) setSelectedAssignmentId(asg.id);
             }}
             onAssignEmployeeQuick={handleQuickAssignEmployee}
+            isDarkMode={isDarkMode}
+          />
+        ) : (
+          <MasterDataView
+            employees={employees}
+            worksites={worksites}
+            vehicles={vehicles}
+            equipment={equipment}
+            assignments={assignments}
+            statusOptions={statusOptions}
+            employmentTypeOptions={employmentTypeOptions}
+            onAddStatusOption={handleAddStatusOption}
+            onAddEmploymentTypeOption={handleAddEmploymentTypeOption}
+            onCreateEmployee={handleCreateEmployee}
+            onUpdateEmployee={handleUpdateEmployee}
+            onCreateVehicle={handleCreateVehicle}
+            onUpdateVehicle={handleUpdateVehicle}
+            onCreateEquipment={handleCreateEquipment}
+            onUpdateEquipment={handleUpdateEquipment}
+            onCreateWorksite={handleCreateWorksite}
+            onUpdateWorksite={handleUpdateWorksite}
+            onMarkCommentRead={handleMarkCommentRead}
             isDarkMode={isDarkMode}
           />
         )}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, UserX, Truck, Search, Plus, Check, ShieldAlert } from 'lucide-react';
+import { Users, UserX, Truck, Search, Plus, Check, ShieldAlert, GripVertical } from 'lucide-react';
 import { Employee, Absence, Vehicle, Equipment, WorksiteAssignment } from '../../types';
 import { Avatar } from '../common/Avatar';
 import { Badge } from '../common/Badge';
@@ -14,6 +14,7 @@ interface UnassignedPanelProps {
   weekEndDate: string;
   onAssignEmployeeQuick: (employee: Employee) => void;
   onAssignResourceQuick: (resource: Vehicle | Equipment) => void;
+  onUnassignEmployee?: (employeeId: string, sourceAssignmentId: string) => void;
 }
 
 export const UnassignedPanel: React.FC<UnassignedPanelProps> = ({
@@ -26,9 +27,48 @@ export const UnassignedPanel: React.FC<UnassignedPanelProps> = ({
   weekEndDate,
   onAssignEmployeeQuick,
   onAssignResourceQuick,
+  onUnassignEmployee,
 }) => {
   const [activeTab, setActiveTab] = useState<'unassigned' | 'absent' | 'resources'>('unassigned');
   const [search, setSearch] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    if (!isDragOver) setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    try {
+      const dataStr =
+        e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+      if (!dataStr) return;
+      const data = JSON.parse(dataStr);
+      if (
+        data &&
+        data.type === 'EMPLOYEE' &&
+        data.employeeId &&
+        data.sourceAssignmentId &&
+        data.sourceAssignmentId !== 'unassigned'
+      ) {
+        onUnassignEmployee?.(data.employeeId, data.sourceAssignmentId);
+      }
+    } catch (err) {
+      console.error('Failed to parse drop data in UnassignedPanel:', err);
+    }
+  };
 
   // Find set of employee IDs assigned in current week
   const assignedEmpIds = new Set(
@@ -58,7 +98,27 @@ export const UnassignedPanel: React.FC<UnassignedPanelProps> = ({
   const absentEmployees = employees.filter((e) => absentEmpIds.has(e.id));
 
   return (
-    <aside className="bg-[#171717] border border-[#45474D] rounded-xl flex flex-col h-full max-h-[800px] shadow-lg overflow-hidden">
+    <aside
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`relative bg-[#171717] border rounded-xl flex flex-col h-full max-h-[800px] shadow-lg overflow-hidden transition-all ${
+        isDragOver ? 'border-amber-400 ring-2 ring-amber-400/50 bg-amber-950/20' : 'border-[#45474D]'
+      }`}
+    >
+      {/* DROP OVERLAY TO UNASSIGN */}
+      {isDragOver && (
+        <div className="absolute inset-0 z-30 bg-neutral-900/90 backdrop-blur-xs border-2 border-dashed border-amber-400 rounded-xl flex flex-col items-center justify-center p-4 text-amber-200 pointer-events-none animate-fadeIn">
+          <UserX className="w-8 h-8 text-amber-400 mb-2 animate-bounce" />
+          <span className="text-sm font-bold font-mono uppercase tracking-wide">
+            Mitarbeiter hier ablegen
+          </span>
+          <span className="text-xs text-amber-300/80 mt-1">
+            Wird aus dem Baustelleneinsatz entfernt (Entplant)
+          </span>
+        </div>
+      )}
+
       {/* PANEL HEADER TABS */}
       <div className="bg-[#202124] border-b border-[#45474D] p-2 flex items-center justify-between gap-1 text-xs font-semibold select-none">
         <button
@@ -131,13 +191,32 @@ export const UnassignedPanel: React.FC<UnassignedPanelProps> = ({
                 .map((emp) => (
                   <div
                     key={emp.id}
-                    className="bg-[#202124] hover:bg-[#292A2E] p-2.5 rounded-xl border border-[#32343A] flex items-center justify-between gap-2 transition"
+                    draggable
+                    onDragStart={(e) => {
+                      e.stopPropagation();
+                      const payload = JSON.stringify({
+                        type: 'EMPLOYEE',
+                        employeeId: emp.id,
+                        sourceAssignmentId: 'unassigned',
+                      });
+                      e.dataTransfer.setData('application/json', payload);
+                      e.dataTransfer.setData('text/plain', payload);
+                      e.dataTransfer.effectAllowed = 'move';
+                    }}
+                    className="bg-[#202124] hover:bg-[#292A2E] p-2.5 rounded-xl border border-[#32343A] hover:border-sky-500/80 flex items-center justify-between gap-2 transition cursor-grab active:cursor-grabbing group/unassigned select-none"
+                    title={`${emp.firstName} ${emp.lastName} — Gedrückt halten & Ziehen auf eine Baustelle im Wochenplan`}
                   >
-                    <Avatar employee={emp} size="md" showName showRoleBadge />
+                    <div className="flex items-center gap-2 min-w-0">
+                      <GripVertical className="w-3.5 h-3.5 text-neutral-500 group-hover/unassigned:text-sky-400 shrink-0" />
+                      <Avatar employee={emp} size="md" showName showRoleBadge />
+                    </div>
 
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-col items-end gap-1 shrink-0">
                       <button
-                        onClick={() => onAssignEmployeeQuick(emp)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAssignEmployeeQuick(emp);
+                        }}
                         className="px-2.5 py-1 bg-sky-900 hover:bg-sky-800 text-sky-200 border border-sky-700 rounded-lg text-xs font-semibold transition flex items-center gap-1 focus-ring"
                       >
                         <Plus className="w-3 h-3" />

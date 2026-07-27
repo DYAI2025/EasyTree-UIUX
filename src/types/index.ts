@@ -12,11 +12,23 @@ export type WorksiteColorKey =
   | 'site-yellow'
   | 'site-slate';
 
+export interface EmployeeStatusOption {
+  id: string;
+  label: string;
+}
+
+export interface EmploymentTypeOption {
+  id: string;
+  label: string;
+}
+
 export interface Employee {
   id: string;
   firstName: string;
   lastName: string;
-  role: 'Teamleiter' | 'SKT-Kletterer' | 'Baumpfleger' | 'Maschinist' | 'Auszubildender' | 'Facharbeiter';
+  role: 'Teamleiter' | 'SKT-Kletterer' | 'Baumpfleger' | 'Maschinist' | 'Auszubildender' | 'Facharbeiter' | string;
+  statusId: string;
+  employmentTypeId: string;
   isLeader: boolean;
   skills: string[];
   maxWeeklyHours: number;
@@ -24,6 +36,7 @@ export interface Employee {
   avatarUrl?: string;
   email: string;
   phone: string;
+  notes?: string;
 }
 
 export interface Absence {
@@ -34,6 +47,26 @@ export interface Absence {
   type: 'Urlaub' | 'Krankheit' | 'Schulung' | 'Elternzeit';
   status: 'genehmigt' | 'ausstehend';
   note?: string;
+}
+
+export interface WorksiteRequirement {
+  id: string;
+  text: string;
+}
+
+export interface WorksiteTodo {
+  id: string;
+  title: string;
+  completed: boolean;
+  dueDate?: string;
+}
+
+export interface WorksiteComment {
+  id: string;
+  text: string;
+  author: string;
+  createdAt: string;
+  isUnread: boolean;
 }
 
 export interface Worksite {
@@ -47,24 +80,38 @@ export interface Worksite {
   hexColor: string;
   description: string;
   requiredSkills: string[];
+  orderDescription: string;
+  requirements: WorksiteRequirement[];
+  todoItems: WorksiteTodo[];
+  comments: WorksiteComment[];
 }
 
 export interface Vehicle {
   id: string;
   name: string;
-  type: 'LKW' | 'Transporter' | 'Unimog' | 'Anhänger';
+  type: 'LKW' | 'Transporter' | 'Unimog' | 'Anhänger' | string;
   licensePlate: string;
+  nextTuvDate: string; // YYYY-MM-DD
   status: 'verfügbar' | 'reserviert' | 'wartung';
+  quantity: 1;
+  requiresDriverLicense?: boolean;
+  requiredLicenseClass?: string;
   notes?: string;
 }
 
 export interface Equipment {
   id: string;
   name: string;
-  category: 'Hubarbeitsbühne' | 'Häcksler' | 'Großsäge' | 'Fräse' | 'Spezialgerät';
+  category: 'Hubarbeitsbühne' | 'Häcksler' | 'Großsäge' | 'Fräse' | 'Spezialgerät' | string;
+  quantity: number;
+  requiresDriverLicense?: boolean;
+  requiredLicenseClass?: string;
   isExclusive: boolean;
   status: 'verfügbar' | 'reserviert' | 'wartung';
   serialNumber?: string;
+  lastMaintenanceDate?: string; // YYYY-MM-DD
+  maintenanceIntervalDays?: number;
+  notes?: string;
 }
 
 export type AssignmentStatus = 'draft' | 'published' | 'modified';
@@ -189,7 +236,9 @@ export interface PlanningState {
   selectedAssignmentId: string | null;
   historyStack: WorksiteAssignment[][];
   futureStack: WorksiteAssignment[][];
-  activeView: 'MONTH' | '1W' | '4W';
+  activeView: 'MONTH' | '1W' | '4W' | 'SKILLS' | 'MASTER_DATA';
   simulatedRole: 'ADMINISTRATOR' | 'GESCHÄFTSFÜHRUNG';
   isDarkMode: boolean;
+  employeeStatusOptions?: EmployeeStatusOption[];
+  employmentTypeOptions?: EmploymentTypeOption[];
 }

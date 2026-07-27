@@ -177,75 +177,75 @@ export const SkillsMatrixDashboard: React.FC<SkillsMatrixDashboardProps> = ({
 
   return (
     <div
-      className={`min-h-screen p-4 md:p-6 font-["Zag",_ui-sans-serif,_system-ui] transition-colors ${
+      className={`min-h-screen p-3 sm:p-4 md:p-6 font-["Zag",_ui-sans-serif,_system-ui] transition-colors ${
         isDarkMode
           ? 'bg-[var(--wood-dark)] text-[var(--wood-text-primary)]'
           : 'bg-slate-100 text-slate-900'
       }`}
     >
-      <div className="max-w-[1800px] mx-auto space-y-6">
+      <div className="max-w-[1800px] mx-auto space-y-4 sm:space-y-6">
         {/* TOP HEADER & DASHBOARD SUMMARY */}
         <div
-          className={`p-6 rounded-2xl border shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-6 ${
+          className={`p-4 sm:p-6 rounded-2xl border shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 ${
             isDarkMode
               ? 'bg-[var(--wood-panel)] border-[var(--wood-border)] wood-grain-h'
               : 'bg-white border-slate-200'
           }`}
         >
-          <div className="flex items-center space-x-4">
-            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-amber-500/30 text-amber-400">
-              <Award className="w-8 h-8" />
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-amber-500/30 text-amber-400 shrink-0">
+              <Award className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <div>
-              <div className="flex items-center space-x-3">
-                <h1 className="text-xl font-bold font-mono uppercase tracking-tight">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-base sm:text-lg md:text-xl font-bold font-mono uppercase tracking-tight">
                   Team Qualifikations-Matrix & Skill-Radar
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                   Einsatzplanung 2026
                 </span>
               </div>
-              <p className="text-xs text-[var(--wood-text-secondary)] mt-1">
+              <p className="text-xs text-[var(--wood-text-secondary)] mt-1 hidden sm:block">
                 Vergleicht die zertifizierten Qualifikationen des Teams (Kletterer, Führerscheine, Ersthelfer) mit den Baustellenanforderungen.
               </p>
             </div>
           </div>
 
           {/* Quick KPI Stat Pills */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
-              <span className="text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block">
-                Mitarbeiter Gesamt
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block truncate">
+                Mitarbeiter
               </span>
-              <span className="text-xl font-mono font-bold text-sky-400 mt-0.5 block">
+              <span className="text-lg sm:text-xl font-mono font-bold text-sky-400 mt-0.5 block">
                 {employees.length}
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
-              <span className="text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block truncate">
                 Erfasste Skills
               </span>
-              <span className="text-xl font-mono font-bold text-emerald-400 mt-0.5 block">
+              <span className="text-lg sm:text-xl font-mono font-bold text-emerald-400 mt-0.5 block">
                 {allSkillsList.length}
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
-              <span className="text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block">
-                Aktive Baustellen
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block truncate">
+                Baustellen
               </span>
-              <span className="text-xl font-mono font-bold text-amber-400 mt-0.5 block">
+              <span className="text-lg sm:text-xl font-mono font-bold text-amber-400 mt-0.5 block">
                 {worksites.length}
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
-              <span className="text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block">
-                Skill-Engpässe
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[var(--wood-base)] border border-[var(--wood-border)] text-center">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[var(--wood-text-muted)] block truncate">
+                Engpässe
               </span>
               <span
-                className={`text-xl font-mono font-bold mt-0.5 block ${
+                className={`text-lg sm:text-xl font-mono font-bold mt-0.5 block ${
                   skillGapMetrics.criticalGapsCount > 0 ? 'text-rose-400' : 'text-emerald-400'
                 }`}
               >
@@ -589,10 +589,12 @@ export const SkillsMatrixDashboard: React.FC<SkillsMatrixDashboardProps> = ({
           </div>
 
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left text-xs border-collapse min-w-[900px]">
+            <table className="w-full text-left text-xs border-collapse min-w-[850px]">
               <thead>
                 <tr className="border-b border-[var(--wood-border)] bg-[var(--wood-base)] text-[var(--wood-text-muted)] font-mono uppercase">
-                  <th className="p-3 font-bold">Mitarbeiter</th>
+                  <th className="p-3 font-bold sticky left-0 z-10 bg-[var(--wood-panel)] border-r border-[var(--wood-border)]">
+                    Mitarbeiter
+                  </th>
                   <th className="p-3 font-bold">Rolle</th>
                   <th className="p-3 font-bold">Status</th>
                   {allSkillsList.map((skill) => (
@@ -613,17 +615,17 @@ export const SkillsMatrixDashboard: React.FC<SkillsMatrixDashboardProps> = ({
                       key={emp.id}
                       className="hover:bg-[var(--wood-raised)]/50 transition-colors"
                     >
-                      {/* Name & Initials */}
-                      <td className="p-3 font-semibold">
+                      {/* Name & Initials - Sticky Left */}
+                      <td className="p-3 font-semibold sticky left-0 z-10 bg-[var(--wood-panel)] border-r border-[var(--wood-border)] shadow-sm">
                         <div className="flex items-center space-x-2.5">
                           <span className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 font-mono font-bold text-xs flex items-center justify-center border border-sky-500/30 shrink-0">
                             {emp.initials}
                           </span>
-                          <div>
-                            <span className="text-[var(--wood-text-primary)] font-bold block">
+                          <div className="truncate max-w-[130px] sm:max-w-none">
+                            <span className="text-[var(--wood-text-primary)] font-bold block truncate">
                               {emp.firstName} {emp.lastName}
                             </span>
-                            <span className="text-[10px] text-[var(--wood-text-muted)] font-mono">
+                            <span className="text-[10px] text-[var(--wood-text-muted)] font-mono truncate block">
                               {emp.email}
                             </span>
                           </div>

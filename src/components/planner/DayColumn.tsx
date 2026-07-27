@@ -28,6 +28,11 @@ interface DayColumnProps {
   onAddEmployeeClick?: (assignment: WorksiteAssignment) => void;
   onSwapEmployeeClick?: (assignment: WorksiteAssignment) => void;
   onDeleteAssignmentClick?: (assignmentId: string) => void;
+  onMoveEmployee?: (
+    employeeId: string,
+    targetAssignmentId: string,
+    sourceAssignmentId?: string
+  ) => void;
 }
 
 export const DayColumn: React.FC<DayColumnProps> = ({
@@ -46,6 +51,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({
   onAddEmployeeClick,
   onSwapEmployeeClick,
   onDeleteAssignmentClick,
+  onMoveEmployee,
 }) => {
   const worksiteMap = new Map<string, Worksite>(worksites.map((w) => [w.id, w]));
   const employeeMap = new Map<string, Employee>(employees.map((e) => [e.id, e]));
@@ -172,6 +178,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({
                   onAddEmployeeClick={() => onAddEmployeeClick?.(asg)}
                   onSwapEmployeeClick={() => onSwapEmployeeClick?.(asg)}
                   onDeleteClick={() => onDeleteAssignmentClick?.(asg.id)}
+                  onMoveEmployee={onMoveEmployee}
                 />
               );
             })}
